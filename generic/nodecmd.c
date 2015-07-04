@@ -391,7 +391,8 @@ NodeObjCmd (
     parent = (domNode *) StackTop(interp);
     if (parent == NULL) {
         Tcl_AppendResult(interp, "called outside domNode context", NULL);
-        return TCL_ERROR;
+        ret = TCL_ERROR;
+        goto end;
     }
     doc = parent->ownerDocument;
 
@@ -427,14 +428,16 @@ NodeObjCmd (
                             Tcl_GetStringFromObj (objv[1], &len))!=0) {
                     Tcl_WrongNumArgs(interp, 1, objv,
                                      "?-disableOutputEscaping? text");
-                    return TCL_ERROR;
+                    ret = TCL_ERROR;
+                    goto end;
                 } else {
                     disableOutputEscaping = 1;
                     index = 2;
                 }
             } else {
                 Tcl_WrongNumArgs(interp, 1, objv, "text");
-                return TCL_ERROR;
+                ret = TCL_ERROR;
+                goto end;
             }
         }
         if (!tval) {
@@ -442,15 +445,24 @@ NodeObjCmd (
         }
         switch (abs(type)) {
         case TEXT_NODE_CHK:
-            if (!tcldom_textCheck (interp, tval, "text")) return TCL_ERROR;
+            if (!tcldom_textCheck (interp, tval, "text")) {
+               ret = TCL_ERROR;
+               goto end;
+            }
             createType = TEXT_NODE;
             break;
         case COMMENT_NODE_CHK:
-            if (!tcldom_commentCheck (interp, tval)) return TCL_ERROR;
+            if (!tcldom_commentCheck (interp, tval)) {
+               ret = TCL_ERROR;
+               goto end;
+            }
             createType = COMMENT_NODE;
             break;
         case CDATA_SECTION_NODE_CHK:
-            if (!tcldom_CDATACheck (interp, tval)) return TCL_ERROR;
+            if (!tcldom_CDATACheck (interp, tval)) {
+               ret = TCL_ERROR;
+               goto end;
+            }
             createType = CDATA_SECTION_NODE;
             break;
         default:
@@ -471,17 +483,24 @@ NodeObjCmd (
     case PROCESSING_INSTRUCTION_NODE:
         if (objc != 3) {
             Tcl_WrongNumArgs(interp, 1, objv, "target data");
-            return TCL_ERROR;
+            ret = TCL_ERROR;
+            goto end;
         } 
         tval = Tcl_GetStringFromObj(objv[1], &len);
         if (abs(type) == PROCESSING_INSTRUCTION_NODE_NAME_CHK
             || abs(type) == PROCESSING_INSTRUCTION_NODE_CHK) {
-            if (!tcldom_PINameCheck (interp, tval)) return TCL_ERROR;
+            if (!tcldom_PINameCheck (interp, tval)) {
+                ret = TCL_ERROR;
+                goto end;
+            }
         }
         aval = Tcl_GetStringFromObj(objv[2], &dlen);
         if (abs(type) == PROCESSING_INSTRUCTION_NODE_VALUE_CHK
             || abs(type) == PROCESSING_INSTRUCTION_NODE_CHK) {
-            if (!tcldom_PIValueCheck (interp, aval)) return TCL_ERROR;
+            if (!tcldom_PIValueCheck (interp, aval)) {
+               ret = TCL_ERROR;
+               goto end;
+            }
         }
         newNode = (domNode *)
             domNewProcessingInstructionNode(doc, tval, len, aval, dlen);
@@ -491,7 +510,8 @@ NodeObjCmd (
     case PARSER_NODE: /* non-standard node-type : a hack! */
         if (objc != 2) {
             Tcl_WrongNumArgs(interp, 1, objv, "markup");
-            return TCL_ERROR;
+            ret = TCL_ERROR;
+            goto end;
         }
         ret = tcldom_appendXML(interp, parent, objv[1]);
         break;
@@ -522,7 +542,8 @@ NodeObjCmd (
         if (nodecmd_processAttributes (interp, newNode, type, objc, objv,
                                        &cmdObj, nodeInfo->flags)
             != TCL_OK) {
-            return TCL_ERROR;
+            ret = TCL_ERROR;
+            goto end;
         }
         if (cmdObj) {
             ret = nodecmd_appendFromScript(interp, newNode, cmdObj);
@@ -533,13 +554,18 @@ NodeObjCmd (
         break;
     }
 
-    if (type < 0 && newNode != NULL) {
+end:
+    if (ret != TCL_ERROR && type < 0 && newNode != NULL) {
         char buf[64];
         tcldom_createNodeObj(interp, newNode, buf);
         Tcl_SetObjResult(interp, Tcl_NewStringObj(buf, (domLength)strlen(buf)));
     }
     
     if (ret == TCL_OK) doc->nodeFlags |= NEEDS_RENUMBERING;
+    if (ret == TCL_ERROR && newNode) {
+        /* prevent errors from leaving half-added nodes in the document */
+        domDeleteNode(newNode, NULL, NULL); newNode = NULL;
+    }
     return ret;
 }
 
