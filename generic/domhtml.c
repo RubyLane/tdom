@@ -551,6 +551,9 @@ static void TranslateEntityRefs (
                     z[to++] = (char) ((value | 0x80) & 0xBF);
                 } else {
                     /* error */
+                    while (from < i-1) {
+                        z[to++] = z[from++];
+                    }
                 }
 		    from = i+1;
 		}
