@@ -49,10 +49,7 @@
 #include <math.h>
 #include <limits.h>
 #include <locale.h>
-#include <dom.h>
-#include <domxpath.h>
-#include <domxslt.h>
-#include <tcl.h>         /* for hash tables */
+#include "tdomInt.h"
 
 /*----------------------------------------------------------------------------
 |   Defines

@@ -36,10 +36,8 @@
 \---------------------------------------------------------------------------*/
 #include <tcl.h>
 #include <string.h>
-#include <dom.h>
-#include <tclexpat.h>
+#include "tdomInt.h"
 #include <fcntl.h>
-#include <schema.h>
 
 #ifdef _MSC_VER
 #include <io.h>
@@ -108,7 +106,7 @@ typedef enum {
 
 static int uniqueCounter = 0;  /* Counter to generate unique command names
                                 */
-TDomThreaded(static Tcl_Mutex counterMutex;) /* Protect the counter (zv) */
+TDomThreaded(TCL_DECLARE_MUTEX(counterMutex)) /* Protect the counter (zv) */
 
 /*----------------------------------------------------------------------------
 |   Prototypes for procedures defined later in this file:

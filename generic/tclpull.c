@@ -23,7 +23,7 @@
 
 #ifndef TDOM_NO_PULL
 
-#include <tdom.h>
+#include "tdomInt.h"
 #include <fcntl.h>
 #ifdef _MSC_VER
 #include <io.h>

@@ -133,7 +133,7 @@ TEA_ADD_SOURCES([generic/xmlsimple.c \
                  generic/tclpull.c   \
                  generic/schema.c \
                  generic/tdomStubInit.c])
-TEA_ADD_HEADERS([generic/tdom.h])
+TEA_ADD_HEADERS([generic/tdom.h generic/tdomDecls.h generic/domxpath.h generic/schema.h expat/expat.h expat/expat_external.h])
 TEA_ADD_INCLUDES([-I${srcdir}/generic ${AOL_INCLUDES} ${HTML5_INCLUDES}])
 TEA_ADD_LIBS([${AOL_LIBS} ${HTML5_LIBS}])
 TEA_ADD_CFLAGS([])

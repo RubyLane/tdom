@@ -63,9 +63,6 @@
 #ifndef __DOMXSLT_H__
 #define __DOMXSLT_H__
 
-#include <dom.h>
-#include <domxpath.h>
-
 
 typedef int (*xsltMsgCB) (void *clientData, char *str, 
                           int length, int terminate);

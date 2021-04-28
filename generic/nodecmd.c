@@ -35,10 +35,7 @@
 |   Includes
 |
 \---------------------------------------------------------------------------*/
-#include <dom.h>
-#include <tcldom.h>
-#include <tcl.h>
-#include <nodecmd.h>
+#include "tdomInt.h"
 
 #define PARSER_NODE 9999 /* Hack so that we can invoke XML parser */
 /* More hacked domNodeTypes - used to signal, that we want to check

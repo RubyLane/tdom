@@ -38,17 +38,8 @@
 |   Includes
 |
 \---------------------------------------------------------------------------*/
-#include <tcl.h>
-#include <dom.h>
-#include <domxpath.h>
-#include <domxslt.h>
+#include "tdomInt.h"
 #include <xmlsimple.h>
-#include <domjson.h>
-#include <domhtml.h>
-#include <domhtml5.h>
-#include <nodecmd.h>
-#include <tcldom.h>
-#include <schema.h>
 #include <versionhash.h>
 
 /* #define DEBUG */
@@ -6928,6 +6919,7 @@ int tcldom_DomObjCmd (
         "isPIValue",       "isNCName",           "createDocumentNode",
         "setNameCheck",    "setTextCheck",       "setObjectCommands",
         "featureinfo",     "isBMPCharData",      "clearString",
+        "currentNode",
 #ifdef TCL_THREADS
         "attachDocument",  "detachDocument",
 #endif
@@ -6940,7 +6932,8 @@ int tcldom_DomObjCmd (
         m_isQName,           m_isComment,          m_isCDATA,
         m_isPIValue,         m_isNCName,           m_createDocumentNode,
         m_setNameCheck,      m_setTextCheck,       m_setObjectCommands,
-        m_featureinfo,       m_isBMPCharData,      m_clearString
+        m_featureinfo,       m_isBMPCharData,      m_clearString,
+        m_currentNode
 #ifdef TCL_THREADS
         ,m_attachDocument,   m_detachDocument
 #endif
@@ -7180,6 +7173,20 @@ int tcldom_DomObjCmd (
                 Tcl_SetObjResult (interp, newObj);
             } else {
                 Tcl_SetObjResult (interp, objv[2]);
+            }
+            return TCL_OK;
+
+        case m_currentNode:
+            {
+                domNode *parent = NULL;
+
+                CheckArgs(2,2,2,"");
+                parent = (domNode *)nodecmd_currentNode();
+                if (parent == NULL) {
+                    Tcl_AppendResult(interp, "called outside domNode context", NULL);
+                    return TCL_ERROR;
+                }
+                Tcl_SetObjResult(interp, tcldom_returnNodeObj(interp, parent));
             }
             return TCL_OK;
                 

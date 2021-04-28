@@ -64,6 +64,224 @@ EXTERN domDocument *	tcldom_getDocumentFromName(Tcl_Interp *interp,
 				char *docName, char **errMsg);
 /* 18 */
 EXTERN SchemaData *	tdomGetSchemadata(void);
+/* 19 */
+EXTERN void		tcldom_createNodeObj(Tcl_Interp *interp,
+				domNode *node, char *objCmdName);
+/* 20 */
+EXTERN domNode *	domCloneNode(domNode *node, int deep);
+/* 21 */
+EXTERN domDocument *	domCreateDoc(const char *baseURI,
+				int storeLineColumn);
+/* 22 */
+EXTERN domDocument *	domCreateDocument(const char *uri,
+				char *documentElementTagName);
+/* 23 */
+EXTERN void		domSetDocumentElement(domDocument *doc);
+/* 24 */
+EXTERN void		domFreeDocument(domDocument *doc,
+				domFreeCallback freeCB, void *clientData);
+/* 25 */
+EXTERN void		domNop(void);
+/* 26 */
+EXTERN const char *	domException2String(domException exception);
+/* 27 */
+EXTERN void		domModuleInitialize(void);
+/* 28 */
+EXTERN domDocument *	domReadDocument(XML_Parser parser, char *xml,
+				int length, int ignoreWhiteSpaces,
+				int keepCDATA, int storeLineColumn,
+				int ignoreXMLNS, int feedbackAfter,
+				Tcl_Obj *feedbackCmd, Tcl_Channel channel,
+				const char *baseurl, Tcl_Obj *extResolver,
+				int useForeignDTD, int paramEntityParsing,
+#ifndef TDOM_NO_SCHEMA
+                                SchemaData *cdata,
+#endif
+                                Tcl_Interp *interp, int *status);
+/* 29 */
+EXTERN void		domFreeNode(domNode *node, domFreeCallback freeCB,
+				void *clientData, int dontfree);
+/* 30 */
+EXTERN domTextNode *	domNewTextNode(domDocument *doc, const char *value,
+				int length, domNodeType nodeType);
+/* 31 */
+EXTERN domNode *	domNewElementNode(domDocument *doc,
+				const char *tagName);
+/* 32 */
+EXTERN domNode *	domNewElementNodeNS(domDocument *doc,
+				const char *tagName, const char *uri);
+/* 33 */
+EXTERN domProcessingInstructionNode * domNewProcessingInstructionNode(
+				domDocument *doc, const char *targetValue,
+				int targetLength, const char *dataValue,
+				int dataLength);
+/* 34 */
+EXTERN domAttrNode *	domSetAttribute(domNode *node,
+				const char *restrict attributeName,
+				const char *restrict attributeValue);
+/* 35 */
+EXTERN domAttrNode *	domSetAttributeNS(domNode *node,
+				const char *attributeName,
+				const char *attributeValue, const char *uri,
+				int createNSIfNeeded);
+/* 36 */
+EXTERN domAttrNode *	domGetAttributeNodeNS(domNode *node, const char *uri,
+				const char *localname);
+/* 37 */
+EXTERN int		domRemoveAttribute(domNode *node,
+				const char *attributeName);
+/* 38 */
+EXTERN int		domRemoveAttributeNS(domNode *node, const char *uri,
+				const char *localName);
+/* 39 */
+EXTERN domNode *	domPreviousSibling(domNode *attr);
+/* 40 */
+EXTERN domException	domDeleteNode(domNode *node, domFreeCallback freeCB,
+				void *clientData);
+/* 41 */
+EXTERN domException	domRemoveChild(domNode *node, domNode *childToRemove);
+/* 42 */
+EXTERN domException	domAppendChild(domNode *node, domNode *childToAppend);
+/* 43 */
+EXTERN domException	domInsertBefore(domNode *node,
+				domNode *childToInsert, domNode *refChild);
+/* 44 */
+EXTERN domException	domReplaceChild(domNode *node, domNode *newChild,
+				domNode *oldChild);
+/* 45 */
+EXTERN domException	domSetNodeValue(domNode *node, const char *nodeValue,
+				int valueLen);
+/* 46 */
+EXTERN domTextNode *	domAppendNewTextNode(domNode *parent,
+				const char *value, int length,
+				domNodeType nodeType,
+				int disableOutputEscaping);
+/* 47 */
+EXTERN domNode *	domAppendNewElementNode(domNode *parent,
+				const char *tagName, const char *uri);
+/* 48 */
+EXTERN domNode *	domAppendLiteralNode(domNode *parent, domNode *node);
+/* 49 */
+EXTERN domNS *		domAddNSToNode(domNode *node, domNS *nsToAdd);
+/* 50 */
+EXTERN const char *	domNamespacePrefix(domNode *node);
+/* 51 */
+EXTERN const char *	domNamespaceURI(domNode *node);
+/* 52 */
+EXTERN const char *	domGetLocalName(const char *nodeName);
+/* 53 */
+EXTERN int		domSplitQName(const char *name, char *prefix,
+				const char **localName);
+/* 54 */
+EXTERN domNS *		domLookupNamespace(domDocument *doc,
+				const char *prefix, const char *namespaceURI);
+/* 55 */
+EXTERN domNS *		domLookupPrefix(domNode *node, const char *prefix);
+/* 56 */
+EXTERN int		domIsNamespaceInScope(domActiveNS *NSstack,
+				int NSstackPos, const char *prefix,
+				const char *namespaceURI);
+/* 57 */
+EXTERN const char *	domLookupPrefixWithMappings(domNode *node,
+				const char *prefix, char **prefixMappings);
+/* 58 */
+EXTERN domNS *		domLookupURI(domNode *node, char *uri);
+/* 59 */
+EXTERN domNS *		domGetNamespaceByIndex(domDocument *doc, int nsIndex);
+/* 60 */
+EXTERN domNS *		domNewNamespace(domDocument *doc, const char *prefix,
+				const char *namespaceURI);
+/* 61 */
+EXTERN int		domGetLineColumn(domNode *node, long *line,
+				long *column);
+/* 62 */
+EXTERN int		domXPointerChild(domNode *node, int all,
+				int instance, domNodeType type,
+				char *element, char *attrName,
+				char *attrValue, int attrLen,
+				domAddCallback addCallback, void *clientData);
+/* 63 */
+EXTERN int		domXPointerDescendant(domNode *node, int all,
+				int instance, int *i, domNodeType type,
+				char *element, char *attrName,
+				char *attrValue, int attrLen,
+				domAddCallback addCallback, void *clientData);
+/* 64 */
+EXTERN int		domXPointerAncestor(domNode *node, int all,
+				int instance, int *i, domNodeType type,
+				char *element, char *attrName,
+				char *attrValue, int attrLen,
+				domAddCallback addCallback, void *clientData);
+/* 65 */
+EXTERN int		domXPointerXSibling(domNode *node, int forward_mode,
+				int all, int instance, domNodeType type,
+				char *element, char *attrName,
+				char *attrValue, int attrLen,
+				domAddCallback addCallback, void *clientData);
+/* 66 */
+EXTERN const char *	findBaseURI(domNode *node);
+/* 67 */
+EXTERN void		tcldom_tolower(const char *str, char *str_out,
+				int len);
+/* 68 */
+EXTERN int		domIsNAME(const char *name);
+/* 69 */
+EXTERN int		domIsPINAME(const char *name);
+/* 70 */
+EXTERN int		domIsQNAME(const char *name);
+/* 71 */
+EXTERN int		domIsNCNAME(const char *name);
+/* 72 */
+EXTERN int		domIsChar(const char *str);
+/* 73 */
+EXTERN char *		domClearString(char *str, int *haveToFree);
+/* 74 */
+EXTERN int		domIsBMPChar(const char *str);
+/* 75 */
+EXTERN int		domIsComment(const char *str);
+/* 76 */
+EXTERN int		domIsCDATA(const char *str);
+/* 77 */
+EXTERN int		domIsPIValue(const char *str);
+/* 78 */
+EXTERN void		domCopyTo(domNode *node, domNode *parent, int copyNS);
+/* 79 */
+EXTERN void		domCopyNS(domNode *from, domNode *to);
+/* 80 */
+EXTERN domAttrNode *	domCreateXMLNamespaceNode(domNode *parent);
+/* 81 */
+EXTERN void		domRenumberTree(domNode *node);
+/* 82 */
+EXTERN int		domPrecedes(domNode *node, domNode *other);
+/* 83 */
+EXTERN void		domNormalize(domNode *node, int forXPath,
+				domFreeCallback freeCB, void *clientData);
+/* 84 */
+EXTERN domException	domAppendData(domTextNode *node, const char *value,
+				int length, int disableOutputEscaping);
+/* 85 */
+EXTERN void		domLocksLock(domlock *dl, int how);
+/* 86 */
+EXTERN void		domLocksUnlock(domlock *dl);
+/* 87 */
+EXTERN void		domLocksAttach(domDocument *doc);
+/* 88 */
+EXTERN void		domLocksDetach(domDocument *doc);
+/* 89 */
+EXTERN void		domLocksFinalize(ClientData dummy);
+/* 90 */
+EXTERN domAttrNode *	coerceToAttrNode(domNode *n);
+/* 91 */
+EXTERN domTextNode *	coerceToTextNode(domNode *n);
+/* 92 */
+EXTERN domProcessingInstructionNode * coerceToProcessingInstructionNode(
+				domNode *n);
+/* 93 */
+EXTERN domAttrNode *	domSetAttributeEx(domNode *node,
+				const char *restrict attributeName,
+				int nameLength,
+				const char *restrict attributeValue,
+				int valueLength);
 
 typedef struct TdomStubs {
     int magic;
@@ -88,6 +306,85 @@ typedef struct TdomStubs {
     domNode * (*tcldom_getNodeFromName) (Tcl_Interp *interp, char *nodeName, char **errMsg); /* 16 */
     domDocument * (*tcldom_getDocumentFromName) (Tcl_Interp *interp, char *docName, char **errMsg); /* 17 */
     SchemaData * (*tdomGetSchemadata) (void); /* 18 */
+    void (*tcldom_createNodeObj) (Tcl_Interp *interp, domNode *node, char *objCmdName); /* 19 */
+    domNode * (*domCloneNode) (domNode *node, int deep); /* 20 */
+    domDocument * (*domCreateDoc) (const char *baseURI, int storeLineColumn); /* 21 */
+    domDocument * (*domCreateDocument) (const char *uri, char *documentElementTagName); /* 22 */
+    void (*domSetDocumentElement) (domDocument *doc); /* 23 */
+    void (*domFreeDocument) (domDocument *doc, domFreeCallback freeCB, void *clientData); /* 24 */
+    void (*domNop) (void); /* 25 */
+    const char * (*domException2String) (domException exception); /* 26 */
+    void (*domModuleInitialize) (void); /* 27 */
+    domDocument * (*domReadDocument) (XML_Parser parser, char *xml, int length, int ignoreWhiteSpaces, int keepCDATA, int storeLineColumn, int ignoreXMLNS, int feedbackAfter, Tcl_Obj *feedbackCmd, Tcl_Channel channel, const char *baseurl, Tcl_Obj *extResolver, int useForeignDTD, int paramEntityParsing,
+#ifndef TDOM_NO_SCHEMA
+            SchemaData *cdata,
+#endif
+            Tcl_Interp *interp, int *status); /* 28 */
+    void (*domFreeNode) (domNode *node, domFreeCallback freeCB, void *clientData, int dontfree); /* 29 */
+    domTextNode * (*domNewTextNode) (domDocument *doc, const char *value, int length, domNodeType nodeType); /* 30 */
+    domNode * (*domNewElementNode) (domDocument *doc, const char *tagName); /* 31 */
+    domNode * (*domNewElementNodeNS) (domDocument *doc, const char *tagName, const char *uri); /* 32 */
+    domProcessingInstructionNode * (*domNewProcessingInstructionNode) (domDocument *doc, const char *targetValue, int targetLength, const char *dataValue, int dataLength); /* 33 */
+    domAttrNode * (*domSetAttribute) (domNode *node, const char *restrict attributeName, const char *restrict attributeValue); /* 34 */
+    domAttrNode * (*domSetAttributeNS) (domNode *node, const char *attributeName, const char *attributeValue, const char *uri, int createNSIfNeeded); /* 35 */
+    domAttrNode * (*domGetAttributeNodeNS) (domNode *node, const char *uri, const char *localname); /* 36 */
+    int (*domRemoveAttribute) (domNode *node, const char *attributeName); /* 37 */
+    int (*domRemoveAttributeNS) (domNode *node, const char *uri, const char *localName); /* 38 */
+    domNode * (*domPreviousSibling) (domNode *attr); /* 39 */
+    domException (*domDeleteNode) (domNode *node, domFreeCallback freeCB, void *clientData); /* 40 */
+    domException (*domRemoveChild) (domNode *node, domNode *childToRemove); /* 41 */
+    domException (*domAppendChild) (domNode *node, domNode *childToAppend); /* 42 */
+    domException (*domInsertBefore) (domNode *node, domNode *childToInsert, domNode *refChild); /* 43 */
+    domException (*domReplaceChild) (domNode *node, domNode *newChild, domNode *oldChild); /* 44 */
+    domException (*domSetNodeValue) (domNode *node, const char *nodeValue, int valueLen); /* 45 */
+    domTextNode * (*domAppendNewTextNode) (domNode *parent, const char *value, int length, domNodeType nodeType, int disableOutputEscaping); /* 46 */
+    domNode * (*domAppendNewElementNode) (domNode *parent, const char *tagName, const char *uri); /* 47 */
+    domNode * (*domAppendLiteralNode) (domNode *parent, domNode *node); /* 48 */
+    domNS * (*domAddNSToNode) (domNode *node, domNS *nsToAdd); /* 49 */
+    const char * (*domNamespacePrefix) (domNode *node); /* 50 */
+    const char * (*domNamespaceURI) (domNode *node); /* 51 */
+    const char * (*domGetLocalName) (const char *nodeName); /* 52 */
+    int (*domSplitQName) (const char *name, char *prefix, const char **localName); /* 53 */
+    domNS * (*domLookupNamespace) (domDocument *doc, const char *prefix, const char *namespaceURI); /* 54 */
+    domNS * (*domLookupPrefix) (domNode *node, const char *prefix); /* 55 */
+    int (*domIsNamespaceInScope) (domActiveNS *NSstack, int NSstackPos, const char *prefix, const char *namespaceURI); /* 56 */
+    const char * (*domLookupPrefixWithMappings) (domNode *node, const char *prefix, char **prefixMappings); /* 57 */
+    domNS * (*domLookupURI) (domNode *node, char *uri); /* 58 */
+    domNS * (*domGetNamespaceByIndex) (domDocument *doc, int nsIndex); /* 59 */
+    domNS * (*domNewNamespace) (domDocument *doc, const char *prefix, const char *namespaceURI); /* 60 */
+    int (*domGetLineColumn) (domNode *node, long *line, long *column); /* 61 */
+    int (*domXPointerChild) (domNode *node, int all, int instance, domNodeType type, char *element, char *attrName, char *attrValue, int attrLen, domAddCallback addCallback, void *clientData); /* 62 */
+    int (*domXPointerDescendant) (domNode *node, int all, int instance, int *i, domNodeType type, char *element, char *attrName, char *attrValue, int attrLen, domAddCallback addCallback, void *clientData); /* 63 */
+    int (*domXPointerAncestor) (domNode *node, int all, int instance, int *i, domNodeType type, char *element, char *attrName, char *attrValue, int attrLen, domAddCallback addCallback, void *clientData); /* 64 */
+    int (*domXPointerXSibling) (domNode *node, int forward_mode, int all, int instance, domNodeType type, char *element, char *attrName, char *attrValue, int attrLen, domAddCallback addCallback, void *clientData); /* 65 */
+    const char * (*findBaseURI) (domNode *node); /* 66 */
+    void (*tcldom_tolower) (const char *str, char *str_out, int len); /* 67 */
+    int (*domIsNAME) (const char *name); /* 68 */
+    int (*domIsPINAME) (const char *name); /* 69 */
+    int (*domIsQNAME) (const char *name); /* 70 */
+    int (*domIsNCNAME) (const char *name); /* 71 */
+    int (*domIsChar) (const char *str); /* 72 */
+    char * (*domClearString) (char *str, int *haveToFree); /* 73 */
+    int (*domIsBMPChar) (const char *str); /* 74 */
+    int (*domIsComment) (const char *str); /* 75 */
+    int (*domIsCDATA) (const char *str); /* 76 */
+    int (*domIsPIValue) (const char *str); /* 77 */
+    void (*domCopyTo) (domNode *node, domNode *parent, int copyNS); /* 78 */
+    void (*domCopyNS) (domNode *from, domNode *to); /* 79 */
+    domAttrNode * (*domCreateXMLNamespaceNode) (domNode *parent); /* 80 */
+    void (*domRenumberTree) (domNode *node); /* 81 */
+    int (*domPrecedes) (domNode *node, domNode *other); /* 82 */
+    void (*domNormalize) (domNode *node, int forXPath, domFreeCallback freeCB, void *clientData); /* 83 */
+    domException (*domAppendData) (domTextNode *node, const char *value, int length, int disableOutputEscaping); /* 84 */
+    void (*domLocksLock) (domlock *dl, int how); /* 85 */
+    void (*domLocksUnlock) (domlock *dl); /* 86 */
+    void (*domLocksAttach) (domDocument *doc); /* 87 */
+    void (*domLocksDetach) (domDocument *doc); /* 88 */
+    void (*domLocksFinalize) (ClientData dummy); /* 89 */
+    domAttrNode * (*coerceToAttrNode) (domNode *n); /* 90 */
+    domTextNode * (*coerceToTextNode) (domNode *n); /* 91 */
+    domProcessingInstructionNode * (*coerceToProcessingInstructionNode) (domNode *n); /* 92 */
+    domAttrNode * (*domSetAttributeEx) (domNode *node, const char *restrict attributeName, int nameLength, const char *restrict attributeValue, int valueLength); /* 93 */
 } TdomStubs;
 
 extern const TdomStubs *tdomStubsPtr;
@@ -140,6 +437,156 @@ extern const TdomStubs *tdomStubsPtr;
 	(tdomStubsPtr->tcldom_getDocumentFromName) /* 17 */
 #define tdomGetSchemadata \
 	(tdomStubsPtr->tdomGetSchemadata) /* 18 */
+#define tcldom_createNodeObj \
+	(tdomStubsPtr->tcldom_createNodeObj) /* 19 */
+#define domCloneNode \
+	(tdomStubsPtr->domCloneNode) /* 20 */
+#define domCreateDoc \
+	(tdomStubsPtr->domCreateDoc) /* 21 */
+#define domCreateDocument \
+	(tdomStubsPtr->domCreateDocument) /* 22 */
+#define domSetDocumentElement \
+	(tdomStubsPtr->domSetDocumentElement) /* 23 */
+#define domFreeDocument \
+	(tdomStubsPtr->domFreeDocument) /* 24 */
+#define domNop \
+	(tdomStubsPtr->domNop) /* 25 */
+#define domException2String \
+	(tdomStubsPtr->domException2String) /* 26 */
+#define domModuleInitialize \
+	(tdomStubsPtr->domModuleInitialize) /* 27 */
+#define domReadDocument \
+	(tdomStubsPtr->domReadDocument) /* 28 */
+#define domFreeNode \
+	(tdomStubsPtr->domFreeNode) /* 29 */
+#define domNewTextNode \
+	(tdomStubsPtr->domNewTextNode) /* 30 */
+#define domNewElementNode \
+	(tdomStubsPtr->domNewElementNode) /* 31 */
+#define domNewElementNodeNS \
+	(tdomStubsPtr->domNewElementNodeNS) /* 32 */
+#define domNewProcessingInstructionNode \
+	(tdomStubsPtr->domNewProcessingInstructionNode) /* 33 */
+#define domSetAttribute \
+	(tdomStubsPtr->domSetAttribute) /* 34 */
+#define domSetAttributeNS \
+	(tdomStubsPtr->domSetAttributeNS) /* 35 */
+#define domGetAttributeNodeNS \
+	(tdomStubsPtr->domGetAttributeNodeNS) /* 36 */
+#define domRemoveAttribute \
+	(tdomStubsPtr->domRemoveAttribute) /* 37 */
+#define domRemoveAttributeNS \
+	(tdomStubsPtr->domRemoveAttributeNS) /* 38 */
+#define domPreviousSibling \
+	(tdomStubsPtr->domPreviousSibling) /* 39 */
+#define domDeleteNode \
+	(tdomStubsPtr->domDeleteNode) /* 40 */
+#define domRemoveChild \
+	(tdomStubsPtr->domRemoveChild) /* 41 */
+#define domAppendChild \
+	(tdomStubsPtr->domAppendChild) /* 42 */
+#define domInsertBefore \
+	(tdomStubsPtr->domInsertBefore) /* 43 */
+#define domReplaceChild \
+	(tdomStubsPtr->domReplaceChild) /* 44 */
+#define domSetNodeValue \
+	(tdomStubsPtr->domSetNodeValue) /* 45 */
+#define domAppendNewTextNode \
+	(tdomStubsPtr->domAppendNewTextNode) /* 46 */
+#define domAppendNewElementNode \
+	(tdomStubsPtr->domAppendNewElementNode) /* 47 */
+#define domAppendLiteralNode \
+	(tdomStubsPtr->domAppendLiteralNode) /* 48 */
+#define domAddNSToNode \
+	(tdomStubsPtr->domAddNSToNode) /* 49 */
+#define domNamespacePrefix \
+	(tdomStubsPtr->domNamespacePrefix) /* 50 */
+#define domNamespaceURI \
+	(tdomStubsPtr->domNamespaceURI) /* 51 */
+#define domGetLocalName \
+	(tdomStubsPtr->domGetLocalName) /* 52 */
+#define domSplitQName \
+	(tdomStubsPtr->domSplitQName) /* 53 */
+#define domLookupNamespace \
+	(tdomStubsPtr->domLookupNamespace) /* 54 */
+#define domLookupPrefix \
+	(tdomStubsPtr->domLookupPrefix) /* 55 */
+#define domIsNamespaceInScope \
+	(tdomStubsPtr->domIsNamespaceInScope) /* 56 */
+#define domLookupPrefixWithMappings \
+	(tdomStubsPtr->domLookupPrefixWithMappings) /* 57 */
+#define domLookupURI \
+	(tdomStubsPtr->domLookupURI) /* 58 */
+#define domGetNamespaceByIndex \
+	(tdomStubsPtr->domGetNamespaceByIndex) /* 59 */
+#define domNewNamespace \
+	(tdomStubsPtr->domNewNamespace) /* 60 */
+#define domGetLineColumn \
+	(tdomStubsPtr->domGetLineColumn) /* 61 */
+#define domXPointerChild \
+	(tdomStubsPtr->domXPointerChild) /* 62 */
+#define domXPointerDescendant \
+	(tdomStubsPtr->domXPointerDescendant) /* 63 */
+#define domXPointerAncestor \
+	(tdomStubsPtr->domXPointerAncestor) /* 64 */
+#define domXPointerXSibling \
+	(tdomStubsPtr->domXPointerXSibling) /* 65 */
+#define findBaseURI \
+	(tdomStubsPtr->findBaseURI) /* 66 */
+#define tcldom_tolower \
+	(tdomStubsPtr->tcldom_tolower) /* 67 */
+#define domIsNAME \
+	(tdomStubsPtr->domIsNAME) /* 68 */
+#define domIsPINAME \
+	(tdomStubsPtr->domIsPINAME) /* 69 */
+#define domIsQNAME \
+	(tdomStubsPtr->domIsQNAME) /* 70 */
+#define domIsNCNAME \
+	(tdomStubsPtr->domIsNCNAME) /* 71 */
+#define domIsChar \
+	(tdomStubsPtr->domIsChar) /* 72 */
+#define domClearString \
+	(tdomStubsPtr->domClearString) /* 73 */
+#define domIsBMPChar \
+	(tdomStubsPtr->domIsBMPChar) /* 74 */
+#define domIsComment \
+	(tdomStubsPtr->domIsComment) /* 75 */
+#define domIsCDATA \
+	(tdomStubsPtr->domIsCDATA) /* 76 */
+#define domIsPIValue \
+	(tdomStubsPtr->domIsPIValue) /* 77 */
+#define domCopyTo \
+	(tdomStubsPtr->domCopyTo) /* 78 */
+#define domCopyNS \
+	(tdomStubsPtr->domCopyNS) /* 79 */
+#define domCreateXMLNamespaceNode \
+	(tdomStubsPtr->domCreateXMLNamespaceNode) /* 80 */
+#define domRenumberTree \
+	(tdomStubsPtr->domRenumberTree) /* 81 */
+#define domPrecedes \
+	(tdomStubsPtr->domPrecedes) /* 82 */
+#define domNormalize \
+	(tdomStubsPtr->domNormalize) /* 83 */
+#define domAppendData \
+	(tdomStubsPtr->domAppendData) /* 84 */
+#define domLocksLock \
+	(tdomStubsPtr->domLocksLock) /* 85 */
+#define domLocksUnlock \
+	(tdomStubsPtr->domLocksUnlock) /* 86 */
+#define domLocksAttach \
+	(tdomStubsPtr->domLocksAttach) /* 87 */
+#define domLocksDetach \
+	(tdomStubsPtr->domLocksDetach) /* 88 */
+#define domLocksFinalize \
+	(tdomStubsPtr->domLocksFinalize) /* 89 */
+#define coerceToAttrNode \
+	(tdomStubsPtr->coerceToAttrNode) /* 90 */
+#define coerceToTextNode \
+	(tdomStubsPtr->coerceToTextNode) /* 91 */
+#define coerceToProcessingInstructionNode \
+	(tdomStubsPtr->coerceToProcessingInstructionNode) /* 92 */
+#define domSetAttributeEx \
+	(tdomStubsPtr->domSetAttributeEx) /* 93 */
 
 #endif /* defined(USE_TDOM_STUBS) */
 

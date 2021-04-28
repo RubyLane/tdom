@@ -26,8 +26,7 @@
  * sqlite JSON parser
  * (https://www.sqlite.org/src/artifact/312b4ddf4c7399dc) */
 
-#include <dom.h>
-#include <domjson.h>
+#include "tdomInt.h"
 #include <ctype.h>
 
 static const char jsonIsSpace[] = {

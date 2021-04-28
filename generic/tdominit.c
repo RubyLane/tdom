@@ -35,12 +35,7 @@
 |   Includes
 |
 \---------------------------------------------------------------------------*/
-#include <tcl.h>
-#include <dom.h>
-#include <tdom.h>
-#include <tcldom.h>
-#include <tclpull.h>
-#include <schema.h>
+#include "tdomInt.h"
 
 extern TdomStubs tdomStubs;
 
@@ -100,12 +95,8 @@ Tdom_Init (
     tDOM_SchemaInit (interp);
 #endif
     
-#ifdef USE_TCL_STUBS
-    Tcl_PkgProvideEx(interp, PACKAGE_NAME, PACKAGE_VERSION, 
-                     (ClientData) &tdomStubs);
-#else
-    Tcl_PkgProvide(interp, PACKAGE_NAME, PACKAGE_VERSION);
-#endif
+    //fprintf(stderr, "Providing %s %s, tdomConstStubsPtr: %p\n", PACKAGE_NAME, PACKAGE_VERSION, &tdomStubs);
+    Tcl_PkgProvideEx(interp, PACKAGE_NAME, PACKAGE_VERSION, &tdomStubs);
 
     return TCL_OK;
 }

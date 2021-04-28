@@ -29,8 +29,7 @@
 |   Includes
 |
 \---------------------------------------------------------------------------*/
-#include <tcl.h>
-#include <dom.h>
+#include "tdomInt.h"
 #include "gumbo.h"
 #include <assert.h>
 

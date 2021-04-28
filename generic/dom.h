@@ -111,18 +111,10 @@
  * way we name Tcl object accessor commands.
  */
 #ifndef TCL_THREADS
-  extern unsigned long domUniqueNodeNr;
-  extern unsigned long domUniqueDocNr;
-  extern Tcl_HashTable tdom_tagNames;
-  extern Tcl_HashTable tdom_attrNames;
-# define TDomNotThreaded(x) x
-# define TDomThreaded(x)
 # define HASHTAB(doc,tab)   tab
 # define NODE_NO(doc)       ++domUniqueNodeNr
 # define DOC_NO(doc)        ++domUniqueDocNr
 #else
-# define TDomNotThreaded(x)
-# define TDomThreaded(x)    x
 # define HASHTAB(doc,tab)   (doc)->tab
 # define NODE_NO(doc)       ((doc)->nodeCounter)++
 # define DOC_NO(doc)        (unsigned long)(doc)
@@ -338,74 +330,23 @@ static const unsigned char CharBit[] = {
 
 #define IS_XML_WHITESPACE(c)  ((c)==' ' || (c)=='\n' || (c)=='\r' || (c)=='\t')
 
-/*--------------------------------------------------------------------------
-|   DOMString
-|
-\-------------------------------------------------------------------------*/
-typedef char* domString;   /* should 16-bit unicode character !!*/
-
-
-/*--------------------------------------------------------------------------
-|   domNodeType
-|
-\-------------------------------------------------------------------------*/
-#if defined(_AIX) 
-#    define    ELEMENT_NODE                 1
-#    define    ATTRIBUTE_NODE               2
-#    define    TEXT_NODE                    3
-#    define    CDATA_SECTION_NODE           4
-#    define    ENTITY_REFERENCE_NODE        5
-#    define    ENTITY_NODE                  6
-#    define    PROCESSING_INSTRUCTION_NODE  7
-#    define    COMMENT_NODE                 8
-#    define    DOCUMENT_NODE                9
-#    define    DOCUMENT_TYPE_NODE           10
-#    define    DOCUMENT_FRAGMENT_NODE       11
-#    define    NOTATION_NODE                12
-#    define    ALL_NODES                    100
-
-#    define    domNodeType                  int
-
-#else 
-
-typedef enum {
-
-    ELEMENT_NODE                = 1,
-    ATTRIBUTE_NODE              = 2,
-    TEXT_NODE                   = 3,
-    CDATA_SECTION_NODE          = 4,
-    ENTITY_REFERENCE_NODE       = 5,
-    ENTITY_NODE                 = 6,
-    PROCESSING_INSTRUCTION_NODE = 7,
-    COMMENT_NODE                = 8,
-    DOCUMENT_NODE               = 9,
-    DOCUMENT_TYPE_NODE          = 10,
-    DOCUMENT_FRAGMENT_NODE      = 11,
-    NOTATION_NODE               = 12,
-    ALL_NODES                   = 100
-} domNodeType;
-
-#endif
 
 /*--------------------------------------------------------------------------
 |   flags   -  indicating some internal features about nodes
 |
 \-------------------------------------------------------------------------*/
-typedef unsigned int domNodeFlags;
-
+/* domNodeFlags */
 #define HAS_LINE_COLUMN           1
 #define VISIBLE_IN_TCL            2
 #define IS_DELETED                4
 #define HAS_BASEURI               8
 #define DISABLE_OUTPUT_ESCAPING  16
 
-typedef unsigned int domAttrFlags;
-
+/* domAttrFlags */
 #define IS_ID_ATTRIBUTE           1
 #define IS_NS_NODE                2
 
-typedef unsigned int domDocFlags;
-
+/* domDocFlags */
 #define OUTPUT_DEFAULT_INDENT     1
 #define NEEDS_RENUMBERING         2
 #define DONT_FREE                 4
@@ -414,113 +355,11 @@ typedef unsigned int domDocFlags;
 #define VAR_TRACE                32
 
 /*--------------------------------------------------------------------------
-|   an index to the namespace records
-|
-\-------------------------------------------------------------------------*/
-typedef unsigned int domNameSpaceIndex;
-
-
-
-/*--------------------------------------------------------------------------
-|   domException
-|
-\-------------------------------------------------------------------------*/
-typedef enum {
-
-    OK                          = 0,
-    INDEX_SIZE_ERR              = 1,
-    DOMSTRING_SIZE_ERR          = 2,
-    HIERARCHY_REQUEST_ERR       = 3,
-    WRONG_DOCUMENT_ERR          = 4,
-    INVALID_CHARACTER_ERR       = 5,
-    NO_DATA_ALLOWED_ERR         = 6,
-    NO_MODIFICATION_ALLOWED_ERR = 7,
-    NOT_FOUND_ERR               = 8,
-    NOT_SUPPORTED_ERR           = 9,
-    INUSE_ATTRIBUTE_ERR         = 10
-
-} domException;
-
-/*--------------------------------------------------------------------------
-|   domDocInfo
-|
-\-------------------------------------------------------------------------*/
-typedef struct domDocInfo {
-    
-    /* 'name' is always the name of the documentElement, no struct element
-       needed for this */
-    domString      publicId;
-    domString      systemId;
-    domString      internalSubset;
-    /* Currently missing, according to DOM 2: 'entities' and 'notations'. */
-    /* The following struct elements describes additional 'requested'
-       facets of the document, following the xslt rec, section 16 */
-    float          version;
-    char          *encoding;
-    int            omitXMLDeclaration;
-    int            standalone;
-    Tcl_HashTable *cdataSectionElements;
-    domString      method;
-    domString      mediaType;
-    
-} domDocInfo;
-
-/*--------------------------------------------------------------------------
-|   domDocument
-|
-\-------------------------------------------------------------------------*/
-typedef struct domDocument {
-
-    domNodeType       nodeType  : 8;
-    domDocFlags       nodeFlags : 8;
-    domNameSpaceIndex dummy     : 16;
-    unsigned long     documentNumber;
-    struct domNode   *documentElement;
-    struct domNode   *fragments;
-#ifdef TCL_THREADS
-    struct domNode   *deletedNodes;
-#endif
-    struct domNS    **namespaces;
-    int               nsptr;
-    int               nslen;
-    char            **prefixNSMappings; /* Stores doc global prefix ns
-                                           mappings for resolving of
-                                           prefixes in seletNodes expr */
-#ifdef TCL_THREADS
-    unsigned int      nodeCounter;
-#endif
-    struct domNode   *rootNode;
-    Tcl_HashTable    *ids;
-    Tcl_HashTable    *unparsedEntities;
-    Tcl_HashTable    *baseURIs;
-    Tcl_HashTable    *xpathCache;
-    char             *extResolver;
-    domDocInfo       *doctype;
-    TDomThreaded (
-        Tcl_HashTable tdom_tagNames;   /* Names of tags found in doc */
-        Tcl_HashTable tdom_attrNames;  /* Names of tag attributes */
-        unsigned int  refCount;        /* # of object commands attached */
-        struct _domlock *lock;          /* Lock for this document */
-    )
-} domDocument;
-
-/*--------------------------------------------------------------------------
 |  domLock
 |
 \-------------------------------------------------------------------------*/
 
 #ifdef TCL_THREADS
-typedef struct _domlock {
-    domDocument* doc;           /* The DOM document to be locked */
-    int numrd;	                /* # of readers waiting for lock */
-    int numwr;                  /* # of writers waiting for lock */
-    int lrcnt;                  /* Lock ref count, > 0: # of shared
-                                 * readers, -1: exclusive writer */
-    Tcl_Mutex mutex;            /* Mutex for serializing access */
-    Tcl_Condition rcond;        /* Condition var for reader locks */
-    Tcl_Condition wcond;        /* Condition var for writer locks */
-    struct _domlock *next;       /* Next doc lock in global list */
-} domlock;
 
 #define LOCK_READ  0
 #define LOCK_WRITE 1
@@ -528,347 +367,8 @@ typedef struct _domlock {
 #endif
 
 
-/*--------------------------------------------------------------------------
-|   namespace
-|
-\-------------------------------------------------------------------------*/
-typedef struct domNS {
-
-   char   *uri;
-   char   *prefix;
-   int     index;
-
-} domNS;
-
-
 #define MAX_PREFIX_LEN   80
 
-/*---------------------------------------------------------------------------
-|   type domActiveNS
-|
-\--------------------------------------------------------------------------*/
-typedef struct _domActiveNS {
-
-    int    depth;
-    domNS *namespace;
-
-} domActiveNS;
-
-
-/*--------------------------------------------------------------------------
-|   domLineColumn
-|
-\-------------------------------------------------------------------------*/
-typedef struct domLineColumn {
-
-    long  line;
-    long  column;
-
-} domLineColumn;
-
-
-/*--------------------------------------------------------------------------
-|   domNode
-|
-\-------------------------------------------------------------------------*/
-typedef struct domNode {
-
-    domNodeType         nodeType  : 8;
-    domNodeFlags        nodeFlags : 8;
-#ifdef TDOM_LESS_NS
-    domNameSpaceIndex   namespace : 8;
-    unsigned int        info      : 8;
-#else
-    unsigned int        dummy     : 8;
-    unsigned int        info      : 8;    
-#endif
-    unsigned int        nodeNumber;
-    domDocument        *ownerDocument;
-    struct domNode     *parentNode;
-    struct domNode     *previousSibling;
-    struct domNode     *nextSibling;
-
-    domString           nodeName;  /* now the element node specific fields */
-#ifndef TDOM_LESS_NS
-    domNameSpaceIndex   namespace;
-#endif
-    struct domNode     *firstChild;
-    struct domNode     *lastChild;
-    struct domAttrNode *firstAttr;
-
-} domNode;
-
-/*--------------------------------------------------------------------------
-|   domDeleteInfo
-|
-\-------------------------------------------------------------------------*/
-
-typedef struct domDeleteInfo {
-    domDocument * document;
-    domNode     * node;
-    Tcl_Interp  * interp;
-    char        * traceVarName;
-} domDeleteInfo;
-
-
-/*--------------------------------------------------------------------------
-|   domTextNode
-|
-\-------------------------------------------------------------------------*/
-typedef struct domTextNode {
-
-    domNodeType         nodeType  : 8;
-    domNodeFlags        nodeFlags : 8;
-#ifdef TDOM_LESS_NS
-    domNameSpaceIndex   namespace : 8;
-    unsigned int        info      : 8;
-#else
-    unsigned int        dummy     : 8;
-    unsigned int        info      : 8;    
-#endif
-    unsigned int        nodeNumber;
-    domDocument        *ownerDocument;
-    struct domNode     *parentNode;
-    struct domNode     *previousSibling;
-    struct domNode     *nextSibling;
-
-    domString           nodeValue;   /* now the text node specific fields */
-    int                 valueLength;
-
-} domTextNode;
-
-
-/*--------------------------------------------------------------------------
-|   domProcessingInstructionNode
-|
-\-------------------------------------------------------------------------*/
-typedef struct domProcessingInstructionNode {
-
-    domNodeType         nodeType  : 8;
-    domNodeFlags        nodeFlags : 8;
-#ifdef TDOM_LESS_NS
-    domNameSpaceIndex   namespace : 8;
-    unsigned int        info      : 8;
-#else
-    unsigned int        dummy     : 8;
-    unsigned int        info      : 8;    
-#endif
-    unsigned int        nodeNumber;
-    domDocument        *ownerDocument;
-    struct domNode     *parentNode;
-    struct domNode     *previousSibling;
-    struct domNode     *nextSibling;
-
-    domString           targetValue;   /* now the pi specific fields */
-    int                 targetLength;
-#ifndef TDOM_LESS_NS
-    domNameSpaceIndex   namespace;
-#endif
-    domString           dataValue;
-    int                 dataLength;
-
-} domProcessingInstructionNode;
-
-
-/*--------------------------------------------------------------------------
-|   domAttrNode
-|
-\-------------------------------------------------------------------------*/
-typedef struct domAttrNode {
-
-    domNodeType         nodeType  : 8;
-    domAttrFlags        nodeFlags : 8;
-#ifdef TDOM_LESS_NS
-    domNameSpaceIndex   namespace : 8;
-    unsigned int        info      : 8;
-#else
-    unsigned int        dummy     : 8;
-    unsigned int        info      : 8;    
-    domNameSpaceIndex   namespace;
-#endif
-    domString           nodeName;
-    domString           nodeValue;
-    int                 valueLength;
-    struct domNode     *parentNode;
-    struct domAttrNode *nextSibling;
-
-} domAttrNode;
-
-/*--------------------------------------------------------------------------
-|   domAddCallback
-|
-\-------------------------------------------------------------------------*/
-typedef int  (*domAddCallback)  (domNode * node, void * clientData);
-typedef void (*domFreeCallback) (domNode * node, void * clientData);
-
-#include <schema.h>
-
-/*--------------------------------------------------------------------------
-|   Function prototypes
-|
-\-------------------------------------------------------------------------*/
-const char *   domException2String (domException exception);
-
-
-void           domModuleInitialize (void);
-domDocument *  domCreateDoc (const char *baseURI, int storeLineColumn);
-domDocument *  domCreateDocument (const char *uri,
-                                  char *documentElementTagName);
-void           domSetDocumentElement (domDocument *doc);
-
-domDocument *  domReadDocument   (XML_Parser parser,
-                                  char *xml,
-                                  int   length,
-                                  int   ignoreWhiteSpaces,
-                                  int   keepCDATA,
-                                  int   storeLineColumn,
-                                  int   ignoreXMLNS,
-                                  int   feedbackAfter,
-                                  Tcl_Obj *feedbackCmd,
-                                  Tcl_Channel channel,
-                                  const char *baseurl,
-                                  Tcl_Obj *extResolver,
-                                  int   useForeignDTD,
-                                  int   paramEntityParsing,
-#ifndef TDOM_NO_SCHEMA
-                                  SchemaData *sdata,
-#endif
-                                  Tcl_Interp *interp,
-                                  int  *status);
-
-void           domFreeDocument   (domDocument *doc, 
-                                  domFreeCallback freeCB, 
-                                  void * clientData);
-
-void           domFreeNode       (domNode *node, 
-                                  domFreeCallback freeCB, 
-                                  void *clientData, 
-                                  int dontfree);
-
-domTextNode *  domNewTextNode    (domDocument *doc,
-                                  const char  *value,
-                                  int          length,
-                                  domNodeType  nodeType);
-
-domNode *      domNewElementNode (domDocument *doc,
-                                  const char  *tagName);
-		
-domNode *      domNewElementNodeNS (domDocument *doc,
-                                    const char  *tagName,
-                                    const char  *uri);
-
-domProcessingInstructionNode * domNewProcessingInstructionNode (
-                                  domDocument *doc,
-                                  const char  *targetValue,
-                                  int          targetLength,
-                                  const char  *dataValue,
-                                  int          dataLength);
-
-domAttrNode *  domSetAttribute (domNode *node, const char *attributeName,
-                                               const char *attributeValue);
-
-domAttrNode *  domSetAttributeNS (domNode *node, const char *attributeName,
-                                                 const char *attributeValue,
-                                                 const char *uri,
-                                                 int   createNSIfNeeded);
-domAttrNode *  domGetAttributeNodeNS (domNode *node, const char *uri, 
-                                                     const char *localname);
-
-int            domRemoveAttribute (domNode *node, const char *attributeName);
-int            domRemoveAttributeNS (domNode *node, const char *uri,
-                                     const char *localName);
-domNode *      domPreviousSibling (domNode *attr);
-domException   domDeleteNode   (domNode *node, domFreeCallback freeCB, void *clientData);
-domException   domRemoveChild  (domNode *node, domNode *childToRemove);
-domException   domAppendChild  (domNode *node, domNode *childToAppend);
-domException   domInsertBefore (domNode *node, domNode *childToInsert, domNode *refChild);
-domException   domReplaceChild (domNode *node, domNode *newChild, domNode *oldChild);
-domException   domSetNodeValue (domNode *node, const char *nodeValue,
-                                int valueLen);
-domNode *      domCloneNode (domNode *node, int deep);
-
-domTextNode *  domAppendNewTextNode (domNode *parent, char *value, int length, domNodeType nodeType, int disableOutputEscaping);
-domNode *      domAppendNewElementNode (domNode *parent, const char *tagName,
-                                        const char *uri);
-domNode *      domAppendLiteralNode (domNode *parent, domNode *node);
-domNS *        domAddNSToNode (domNode *node, domNS *nsToAdd);
-const char *   domNamespacePrefix (domNode *node);
-const char *   domNamespaceURI    (domNode *node);
-const char *   domGetLocalName    (const char *nodeName);
-int            domSplitQName (const char *name, char *prefix,
-                              const char **localName);
-domNS *        domLookupNamespace (domDocument *doc, const char *prefix, 
-                                   const char *namespaceURI);
-domNS *        domLookupPrefix  (domNode *node, const char *prefix);
-int            domIsNamespaceInScope (domActiveNS *NSstack, int NSstackPos,
-                                      const char *prefix, const char *namespaceURI);
-const char *   domLookupPrefixWithMappings (domNode *node, const char *prefix,
-                                            char **prefixMappings);
-domNS *        domLookupURI     (domNode *node, char *uri);
-domNS *        domGetNamespaceByIndex (domDocument *doc, int nsIndex);
-domNS *        domNewNamespace (domDocument *doc, const char *prefix,
-                                const char *namespaceURI);
-int            domGetLineColumn (domNode *node, long *line, long *column);
-
-int            domXPointerChild (domNode * node, int all, int instance, domNodeType type,
-                                 char *element, char *attrName, char *attrValue,
-                                 int attrLen, domAddCallback addCallback,
-                                 void * clientData);
-
-int            domXPointerDescendant (domNode * node, int all, int instance,
-                                      int * i, domNodeType type, char *element,
-                                      char *attrName, char *attrValue, int attrLen,
-                                      domAddCallback addCallback, void * clientData);
-
-int            domXPointerAncestor (domNode * node, int all, int instance,
-                                    int * i, domNodeType type, char *element,
-                                    char *attrName, char *attrValue, int attrLen,
-                                    domAddCallback addCallback, void * clientData);
-
-int            domXPointerXSibling (domNode * node, int forward_mode, int all, int instance,
-                                    domNodeType type, char *element, char *attrName,
-                                    char *attrValue, int attrLen,
-                                    domAddCallback addCallback, void * clientData);
-
-const char *   findBaseURI (domNode *node);
-
-void           tcldom_tolower (const char *str, char *str_out, int  len);
-int            domIsNAME (const char *name);
-int            domIsPINAME (const char *name);
-int            domIsQNAME (const char *name);
-int            domIsNCNAME (const char *name);
-int            domIsChar (const char *str);
-char *         domClearString (char *str, int *haveToFree);
-int            domIsBMPChar (const char *str);
-int            domIsComment (const char *str);
-int            domIsCDATA (const char *str);
-int            domIsPIValue (const char *str);
-void           domCopyTo (domNode *node, domNode *parent, int copyNS);
-void           domCopyNS (domNode *from, domNode *to);
-domAttrNode *  domCreateXMLNamespaceNode (domNode *parent);
-void           domRenumberTree (domNode *node);
-int            domPrecedes (domNode *node, domNode *other);
-void           domNormalize (domNode *node, int forXPath, 
-                             domFreeCallback freeCB, void *clientData);
-domException   domAppendData (domTextNode *node, char *value, int length, 
-                              int disableOutputEscaping);
-
-#ifdef TCL_THREADS
-void           domLocksLock(domlock *dl, int how);
-void           domLocksUnlock(domlock *dl);
-void           domLocksAttach(domDocument *doc);
-void           domLocksDetach(domDocument *doc);
-void           domLocksFinalize(ClientData dummy);
 #endif
 
-/*---------------------------------------------------------------------------
-|   coercion routines for calling from C++
-|
-\--------------------------------------------------------------------------*/
-domAttrNode                  * coerceToAttrNode( domNode *n );
-domTextNode                  * coerceToTextNode( domNode *n );
-domProcessingInstructionNode * coerceToProcessingInstructionNode( domNode *n );
-
-
-#endif
 

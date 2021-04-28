@@ -43,11 +43,7 @@
 |   Includes
 |
 \--------------------------------------------------------------------------*/
-#include <tcl.h>
-#include <dom.h>
-#include <domxpath.h>
-#include <schema.h>
-#include <tclexpat.h>
+#include "tdomInt.h"
 
 
 /* #define DEBUG */
@@ -2968,6 +2964,19 @@ domSetAttribute (
     const char *attributeValue
 )
 {
+    return domSetAttributeEx(node,
+	    attributeName, strlen(attributeName),
+	    attributeValue, strlen(attributeValue));
+}
+domAttrNode *
+domSetAttributeEx (
+    domNode              *node,
+    const char           *attributeName,
+    int                  nameLength,
+    const char *restrict attributeValue,
+    int                  valueLength
+)
+{
     domAttrNode   *attr, *lastAttr;
     Tcl_HashEntry *h;
     int            hnew;
@@ -2995,9 +3004,10 @@ domSetAttribute (
             }
         }
         FREE (attr->nodeValue);
-        attr->valueLength = strlen(attributeValue);
+        attr->valueLength = valueLength;
         attr->nodeValue   = (char*)MALLOC(attr->valueLength+1);
-        strcpy(attr->nodeValue, attributeValue);
+        memcpy(attr->nodeValue, attributeValue, valueLength);
+        attr->nodeValue[valueLength] = 0;
     } else {
         /*-----------------------------------------------
         |   add a complete new attribute node
@@ -3011,9 +3021,10 @@ domSetAttribute (
         attr->namespace   = 0;
         attr->nodeName    = (char *)&(h->key);
         attr->parentNode  = node;
-        attr->valueLength = strlen(attributeValue);
+        attr->valueLength = valueLength;
         attr->nodeValue   = (char*)MALLOC(attr->valueLength+1);
-        strcpy(attr->nodeValue, attributeValue);
+        memcpy(attr->nodeValue, attributeValue, valueLength);
+        attr->nodeValue[valueLength] = 0;
 
         if (node->firstAttr) {
             lastAttr = node->firstAttr;
@@ -4025,13 +4036,13 @@ domNewTextNode(
 
 void
 domEscapeCData (
-    char        *value,
+    const char  *value,
     int          length,
     Tcl_DString *escapedData
 )
 {
     int i, start = 0;
-    char *pc;
+    const char *pc;
 
     Tcl_DStringInit (escapedData);
     pc = value;
@@ -4065,7 +4076,7 @@ domEscapeCData (
 domTextNode *
 domAppendNewTextNode(
     domNode     *parent,
-    char        *value,
+    const char  *value,
     int          length,
     domNodeType  nodeType,
     int          disableOutputEscaping
@@ -4098,8 +4109,9 @@ domAppendNewTextNode(
     node->nodeNumber    = NODE_NO(parent->ownerDocument);
     node->ownerDocument = parent->ownerDocument;
     node->valueLength   = length;
-    node->nodeValue     = (char*)MALLOC(length);
+    node->nodeValue     = (char*)MALLOC(length+1);
     memmove(node->nodeValue, value, length);
+    node->nodeValue[node->valueLength] = 0;
 
     if (parent->lastChild) {
         parent->lastChild->nextSibling = (domNode*)node;
@@ -4226,7 +4238,7 @@ domAppendData (
     domTextNode *node,          /* The node, to append value to. Must be
                                    a TEXT_NODE, COMMENT_NODE or 
                                    CDATA_SECTION_NODE*/
-    char        *value,         /* The data to append */ 
+    const char  *value,         /* The data to append */ 
     int          length,        /* The length of value in byte */
     int          disableOutputEscaping   /* If true, disable output 
                                             escaping on the node */
@@ -4237,25 +4249,28 @@ domAppendData (
     if (node->nodeFlags & DISABLE_OUTPUT_ESCAPING) {
         if (disableOutputEscaping) {
             node->nodeValue = REALLOC (node->nodeValue,
-                                        node->valueLength + length);
+                                        node->valueLength + length+1);
             memmove (node->nodeValue + node->valueLength, value, length);
             node->valueLength += length;
+            node->nodeValue[node->valueLength] = 0;
         } else {
             domEscapeCData (value, length, &escData);
             if (Tcl_DStringLength (&escData)) {
                 node->nodeValue = REALLOC (node->nodeValue,
                                             node->valueLength +
-                                            Tcl_DStringLength (&escData));
+                                            Tcl_DStringLength (&escData) + 1);
                 memmove (node->nodeValue + node->valueLength,
                          Tcl_DStringValue (&escData),
                          Tcl_DStringLength (&escData));
                 node->valueLength += Tcl_DStringLength (&escData);
+                node->nodeValue[node->valueLength] = 0;
             } else {
                 node->nodeValue = REALLOC (node->nodeValue,
-                                            node->valueLength+length);
+                                            node->valueLength+length + 1);
                 memmove (node->nodeValue + node->valueLength,
                          value, length);
                 node->valueLength += length;
+                node->nodeValue[node->valueLength] = 0;
             }
             Tcl_DStringFree (&escData);
         }
@@ -4267,21 +4282,23 @@ domAppendData (
             if (Tcl_DStringLength (&escData)) {
                 FREE (node->nodeValue);
                 node->nodeValue =
-                    MALLOC (Tcl_DStringLength (&escData) + length);
+                    MALLOC (Tcl_DStringLength (&escData) + length + 1);
                 memmove (node->nodeValue, Tcl_DStringValue (&escData),
                          Tcl_DStringLength (&escData));
                 node->valueLength = Tcl_DStringLength (&escData);
+                node->nodeValue[node->valueLength] = 0;
             } else {
                 node->nodeValue = REALLOC (node->nodeValue,
-                                            node->valueLength+length);
+                                            node->valueLength+length + 1);
             }
             Tcl_DStringFree (&escData);
         } else {
             node->nodeValue = REALLOC (node->nodeValue,
-                                        node->valueLength + length);
+                                        node->valueLength + length + 1);
         }
         memmove (node->nodeValue + node->valueLength, value, length);
         node->valueLength += length;
+        node->nodeValue[node->valueLength] = 0;
     }
 
     return OK;
@@ -5580,4 +5597,9 @@ TclTdomObjCmd (dummy, interp, objc, objv)
     }
 
     return TCL_OK;
+}
+
+void domNop()
+{
+    fprintf(stderr, "in domNop\n");
 }

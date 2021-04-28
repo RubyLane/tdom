@@ -24,8 +24,6 @@
 #ifndef __SCHEMA_H__
 #define __SCHEMA_H__
 
-#include <tcldom.h>
-#include <domxpath.h>
 
 typedef enum {
   SCHEMA_CTYPE_ANY,

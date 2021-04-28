@@ -29,37 +29,30 @@
 |
 \---------------------------------------------------------------------------*/
 
-#ifndef USE_TCL_STUBS
-#  define USE_TCL_STUBS
-#endif
-#undef USE_TCL_STUB_PROCS
+#undef USE_TCL_STUBS
+#undef USE_EXA_STUBS
+#define USE_TCL_STUBS 1
+#define USE_EXA_STUBS 1
 
-#include <tdom.h>
+#include "tdom.h"
 
-/*
- * Ensure that Tdom_InitStubs is built as an exported symbol.  The other stub
- * functions should be built as non-exported symbols.
- */
-
-#undef TCL_STORAGE_CLASS
-#define TCL_STORAGE_CLASS DLLEXPORT
-
-const TdomStubs *tdomStubsPtr;
+MODULE_SCOPE const TdomStubs *tdomStubsPtr;
+const TdomStubs *tdomStubsPtr = NULL;
 
 /*----------------------------------------------------------------------------
 |   Tdom_InitStubs
 |
 \---------------------------------------------------------------------------*/
 
-const char *
-Tdom_InitStubs (
+#undef TdomInitializeStubs
+MODULE_SCOPE const char *
+TdomInitializeStubs (
     Tcl_Interp *interp, 
-    char *version, 
     int exact
     )
 {
     const char *actualVersion;
-    ClientData clientData = NULL;
+    TdomStubs *stubsPtr = NULL;
 
 #if (TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION == 0)
     Tcl_SetResult(interp, "Too old Tcl version. Binary extensions "
@@ -67,19 +60,21 @@ Tdom_InitStubs (
                   "Tcl version.", TCL_STATIC);
     return NULL;
 #else
-    actualVersion = Tcl_PkgRequireEx(interp, "tdom", version, exact,
-                                     (ClientData*) &clientData);
-    tdomStubsPtr = (TdomStubs*)clientData;
+    actualVersion = tclStubsPtr->tcl_PkgRequireEx(interp, PACKAGE_NAME,
+            PACKAGE_VERSION, exact, &stubsPtr);
 
+    //fprintf(stderr, "stubs require of %s, got stubsPtr: %p\n", PACKAGE_NAME, stubsPtr);
     if (!actualVersion) {
         return NULL;
     }
-    if (!tdomStubsPtr) {
+    if (!stubsPtr) {
         Tcl_SetResult(interp, "This implementation of Tdom does not "
                       "support stubs", TCL_STATIC);
         return NULL;
     }
     
+    tdomStubsPtr = stubsPtr;
+
     return actualVersion;
 #endif
 }

@@ -33,8 +33,6 @@
 #ifndef __TCLDOM_H_INCLUDE__
 #define __TCLDOM_H_INCLUDE__  
 
-#include <tcl.h>
-
 
 /* The following procs are defined in tcldom.c - since they are used
  * in nodecmd.c these need a prototype somewhere. The prototypes can
@@ -46,8 +44,6 @@ int  tcldom_PIValueCheck(Tcl_Interp *interp, char *text);
 int  tcldom_PINameCheck(Tcl_Interp *interp, char *name);
 int  tcldom_nameCheck(Tcl_Interp *interp, char *name, char *nameType,
                       int isFQName);
-void tcldom_createNodeObj(Tcl_Interp * interp, domNode *node,
-                          char *objCmdName);
 
 domNode * tcldom_getNodeFromObj(Tcl_Interp  *interp, Tcl_Obj *nodeObj);
 int tcldom_prefixNSlist (char ***prefixnsPtr, Tcl_Interp *interp, int objc,

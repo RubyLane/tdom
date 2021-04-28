@@ -4,8 +4,7 @@
    
 #ifdef USE_TCL_STUBS
 
-#include <dom.h>
-#include <tdom.h>
+#include "tdom.h"
 
 /* !BEGIN!: Do not edit below this line. */
 
@@ -31,6 +30,81 @@ const TdomStubs tdomStubs = {
     tcldom_getNodeFromName, /* 16 */
     tcldom_getDocumentFromName, /* 17 */
     tdomGetSchemadata, /* 18 */
+    tcldom_createNodeObj, /* 19 */
+    domCloneNode, /* 20 */
+    domCreateDoc, /* 21 */
+    domCreateDocument, /* 22 */
+    domSetDocumentElement, /* 23 */
+    domFreeDocument, /* 24 */
+    domNop, /* 25 */
+    domException2String, /* 26 */
+    domModuleInitialize, /* 27 */
+    domReadDocument, /* 28 */
+    domFreeNode, /* 29 */
+    domNewTextNode, /* 30 */
+    domNewElementNode, /* 31 */
+    domNewElementNodeNS, /* 32 */
+    domNewProcessingInstructionNode, /* 33 */
+    domSetAttribute, /* 34 */
+    domSetAttributeNS, /* 35 */
+    domGetAttributeNodeNS, /* 36 */
+    domRemoveAttribute, /* 37 */
+    domRemoveAttributeNS, /* 38 */
+    domPreviousSibling, /* 39 */
+    domDeleteNode, /* 40 */
+    domRemoveChild, /* 41 */
+    domAppendChild, /* 42 */
+    domInsertBefore, /* 43 */
+    domReplaceChild, /* 44 */
+    domSetNodeValue, /* 45 */
+    domAppendNewTextNode, /* 46 */
+    domAppendNewElementNode, /* 47 */
+    domAppendLiteralNode, /* 48 */
+    domAddNSToNode, /* 49 */
+    domNamespacePrefix, /* 50 */
+    domNamespaceURI, /* 51 */
+    domGetLocalName, /* 52 */
+    domSplitQName, /* 53 */
+    domLookupNamespace, /* 54 */
+    domLookupPrefix, /* 55 */
+    domIsNamespaceInScope, /* 56 */
+    domLookupPrefixWithMappings, /* 57 */
+    domLookupURI, /* 58 */
+    domGetNamespaceByIndex, /* 59 */
+    domNewNamespace, /* 60 */
+    domGetLineColumn, /* 61 */
+    domXPointerChild, /* 62 */
+    domXPointerDescendant, /* 63 */
+    domXPointerAncestor, /* 64 */
+    domXPointerXSibling, /* 65 */
+    findBaseURI, /* 66 */
+    tcldom_tolower, /* 67 */
+    domIsNAME, /* 68 */
+    domIsPINAME, /* 69 */
+    domIsQNAME, /* 70 */
+    domIsNCNAME, /* 71 */
+    domIsChar, /* 72 */
+    domClearString, /* 73 */
+    domIsBMPChar, /* 74 */
+    domIsComment, /* 75 */
+    domIsCDATA, /* 76 */
+    domIsPIValue, /* 77 */
+    domCopyTo, /* 78 */
+    domCopyNS, /* 79 */
+    domCreateXMLNamespaceNode, /* 80 */
+    domRenumberTree, /* 81 */
+    domPrecedes, /* 82 */
+    domNormalize, /* 83 */
+    domAppendData, /* 84 */
+    domLocksLock, /* 85 */
+    domLocksUnlock, /* 86 */
+    domLocksAttach, /* 87 */
+    domLocksDetach, /* 88 */
+    domLocksFinalize, /* 89 */
+    coerceToAttrNode, /* 90 */
+    coerceToTextNode, /* 91 */
+    coerceToProcessingInstructionNode, /* 92 */
+    domSetAttributeEx, /* 93 */
 };
 
 /* !END!: Do not edit above this line. */

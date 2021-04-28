@@ -46,10 +46,9 @@
 |   Includes
 |
 \---------------------------------------------------------------------------*/
-#include <tcl.h>
 #include <ctype.h>
 #include <string.h>
-#include <dom.h>
+#include "tdomInt.h"
 
 
 

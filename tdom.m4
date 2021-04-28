@@ -703,6 +703,7 @@ AC_DEFUN(TDOM_EXPORT_CONFIG, [
 
     # pkglibdir must be a fully qualified path and (not ${exec_prefix}/lib)
     eval pkglibdir="[$]{libdir}/${PACKAGE_NAME}${PACKAGE_VERSION}"
+    eval pkgincludedir="[$]{includedir}"
     if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
 	eval PKG_STUB_LIB_FLAG="-l${PACKAGE_NAME}stub${PACKAGE_VERSION}"
     else
@@ -712,11 +713,15 @@ AC_DEFUN(TDOM_EXPORT_CONFIG, [
     PKG_STUB_LIB_SPEC="-L${pkglibdir} ${PKG_STUB_LIB_FLAG}"
     PKG_BUILD_STUB_LIB_PATH="`pwd`/[$]{PKG_STUB_LIB_FILE}"
     PKG_STUB_LIB_PATH="${pkglibdir}/[$]{PKG_STUB_LIB_FILE}"
+    PKG_INCLUDE_SPEC="-I${pkgincludedir}"
+    PKG_BUILD_INCLUDE_SPEC="-I`pwd`/generic"
 
     AC_SUBST(PKG_BUILD_STUB_LIB_SPEC)
     AC_SUBST(PKG_STUB_LIB_SPEC)
     AC_SUBST(PKG_BUILD_STUB_LIB_PATH)
     AC_SUBST(PKG_STUB_LIB_PATH)
+    AC_SUBST(PKG_INCLUDE_SPEC)
+    AC_SUBST(PKG_BUILD_INCLUDE_SPEC)
 ])
 
 # Local Variables:

@@ -67,9 +67,7 @@
 #include <limits.h>
 #include <ctype.h>
 #include <errno.h>
-#include <dom.h>
-#include <domxpath.h>
-#include <domxslt.h>
+#include "tdomInt.h"
 
 
 /*----------------------------------------------------------------------------

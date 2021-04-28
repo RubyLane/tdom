@@ -21,10 +21,7 @@
 |
 \---------------------------------------------------------------------------*/
 
-#include <tdom.h>
-#include <tcldom.h>
-#include <domxpath.h>
-#include <schema.h>
+#include "tdomInt.h"
 
 #ifndef TDOM_NO_SCHEMA
 
