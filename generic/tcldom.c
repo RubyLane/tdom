@@ -2727,20 +2727,24 @@ void tcldom_treeAsHTML (
 
     if (node->nodeType == ELEMENT_NODE) {
         child = node->firstChild;
+		/*
         if ((child != NULL) && (child != node->lastChild)
             && (child->nodeType != TEXT_NODE)) {
             writeChars(htmlString, chan, "\n", 1);
         }
+		*/
         while (child != NULL) {
             tcldom_treeAsHTML(htmlString, child, chan, escapeNonASCII,
                               htmlEntities, doctypeDeclaration, scriptTag, 0,
                               breakLines);
             child = child->nextSibling;
         }
+		/*
         if ((node->firstChild != NULL) && (node->firstChild != node->lastChild)
             && (node->lastChild->nodeType != TEXT_NODE)) {
             writeChars(htmlString, chan, "\n", 1);
         }
+		*/
     }
     if (!onlyContents) {
         writeChars(htmlString, chan, "</", 2);
