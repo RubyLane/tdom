@@ -72,7 +72,6 @@
 #else
 # define DBG(x) 
 #endif
-#define DBG(x)              
 #define TRACE(x)            DBG(fprintf(stderr,(x)))
 #define TRACE1(x,a)         DBG(fprintf(stderr,(x),(a)))
 #define TRACE2(x,a,b)       DBG(fprintf(stderr,(x),(a),(b)))
@@ -1157,7 +1156,7 @@ static int xsltFormatNumber (
     int prefixMinux, percentMul = 0, perMilleMul = 0;
     Tcl_DString  dStr, s;
     Tcl_UniChar *format, *negformat = NULL, *p, *p1;
-    DBG(Tcl_DString bStr;)
+    DBG(Tcl_DString dbStr;)
 
     DBG(fprintf(stderr, "number: '%f'\nformatStr='%s' \n", number, formatStr);)
     prefix1[0] = '\0';
@@ -1388,7 +1387,7 @@ static int xsltFormatNumber (
         }
     }
     
-    DBG(fprintf(stderr,"normal part nZero=%d i=%d glen=%d\n", nZero, i, gLen);)
+    DBG(fprintf(stderr,"normal part nZero=%d i=%d glen=" domLengthConversion "\n", nZero, i, gLen);)
     /* fill in grouping char */
     if (gLen > 0) {
         sprintf(stmp,"%0*d", nZero, i);
@@ -1409,7 +1408,7 @@ static int xsltFormatNumber (
             Tcl_DStringFree (&dbStr);
         )
         zl = l + ((l-1) / gLen);
-        DBG(fprintf(stderr, "l=%d zl=%d \n", l, zl);)
+        DBG(fprintf(stderr, "l=" domLengthConversion " zl=" domLengthConversion " \n", l, zl);)
         n[zl--] = '\0';
         p = (Tcl_UniChar*)Tcl_DStringValue (&s) + l - 1;
         g = 0;
@@ -1469,7 +1468,6 @@ static int xsltFormatNumber (
             }
             f[l] = '\0';
         }
-        DBG(fprintf(stderr, "f='%s'\n", f);)
 
         if (prefix) {
             Tcl_DStringAppend (&s, (char*) prefix,
@@ -1792,7 +1790,7 @@ static void StripXMLSpace (
                 }
                 parent = parent->parentNode;
             }
-            DBG(fprintf(stderr, "removing domNode0x%x(len %d) under '%s' \n", 
+            DBG(fprintf(stderr, "removing domNode %p (len %" TDOM_LS_MODIFIER "d) under '%s' \n", 
                         node, len, node->parentNode->nodeName);)
                 domDeleteNode (node, NULL, NULL);
         }
@@ -2021,7 +2019,7 @@ static int xsltXPathFuncs (
         /*--------------------------------------------------------------------
         |   'current' function
         \-------------------------------------------------------------------*/
-        DBG(fprintf(stderr, "xsltXPathFuncs 'current' = 'domNode0x%x' \n",
+        DBG(fprintf(stderr, "xsltXPathFuncs 'current' = 'domNode %p' \n",
                     xs->current);)
         if (argc != 0) {
             reportError (exprContext, "current() must not have any arguments",
@@ -3362,7 +3360,7 @@ static int doSortActions (
                    runs */
                 getAttr(child, "lang", a_lang);
 
-                TRACE4("sorting with '%s' typeText %d ascending %d nodeSetLen=%d\n",
+                TRACE4("sorting with '%s' typeText %d ascending %d nodeSetLen=" domLengthConversion "\n",
                        select, typeText, ascending, nodelist->nr_nodes);
                 CHECK_RC;
                 if (!pos)
@@ -3494,7 +3492,8 @@ static int xsltNumber (
         if (!level) level = "single";
         count = getAttr(actionNode, "count",  a_count);
         from  = getAttr(actionNode, "from",   a_from);
-        TRACE3("xsltNumber  format='%s' count='%s' from='%s' \n", format, count, from);
+        TRACE2("xsltNumber  format='' count='%s' from='%s' \n", count ? count : "(null)",
+               from ? from : "(null)");
         if (count) {
             h = Tcl_CreateHashEntry (&(xs->pattern), count, &hnew);
             if (!hnew) {
@@ -3808,7 +3807,7 @@ static int ExecAction (
                             || tpl == xs->currentTplRule) continue;
                         TRACE3("testing element tpl match='%s' mode='%s' name='%s'\n",
                                tpl->match, tpl->mode, tpl->name);
-                        TRACE4("tpl has prio='%f' precedence='%f'\n", tpl->prio, tpl->precedence, currentPrio, currentPrec);
+                        TRACE4("tpl has prio='%f' precedence='%f' currentPrio='%f' currentPrec='%f', \n", tpl->prio, tpl->precedence, currentPrio, currentPrec);
                         rc = xpathMatches ( tpl->ast, actionNode, currentNode,
                                             &(xs->cbs), errMsg);
                         if (rc < 0) {
@@ -4509,11 +4508,11 @@ static int ExecAction (
             DBG (
               if (currentNode->nodeType == ELEMENT_NODE) {
                   fprintf (stderr, 
-                        "forEach select from Element Node '%s' domNode0x%x:\n",
+                        "forEach select from Element Node '%s' domNode %p:\n",
                            currentNode->nodeName, currentNode);
                   if (currentNode->firstChild) {
                       fprintf(stderr, 
-                              "forEach select from child '%s' domNode0x%x:\n",
+                              "forEach select from child '%s' domNode %p:\n",
                               currentNode->firstChild->nodeName, 
                               currentNode->firstChild);
                   }
@@ -4778,7 +4777,7 @@ static int ExecAction (
                 if (strcmp (str, "yes")==0) disableEsc = 1;
             }
             pc = xpathGetStringValue (actionNode, &len);
-            DBG(fprintf(stderr, "text: pc='%s'%d \n", pc, len);)
+            DBG(fprintf(stderr, "text: pc='%s'" domLengthConversion " \n", pc, len);)
             domAppendNewTextNode(xs->lastNode, pc, len, TEXT_NODE, disableEsc);
             FREE(pc);
             break;
@@ -5115,7 +5114,7 @@ static int ApplyTemplate (
     Tcl_DString     dStr;
     xsltSubDoc     *currentSubDoc;
 
-    TRACE2("\n\nApplyTemplate mode='%s' currentPos=%d \n", mode, currentPos);
+    TRACE2("\n\nApplyTemplate mode='%s' currentPos=" domLengthConversion " \n", mode, currentPos);
     DBG(printXML (currentNode, 0, 1);)
 
     /*--------------------------------------------------------------
@@ -5155,7 +5154,7 @@ static int ApplyTemplate (
                  tpl = tpl->next) {
                 TRACE3("find element tpl match='%s' mode='%s' name='%s'\n",
                        tpl->match, tpl->mode, tpl->name);
-                TRACE4("tpl has prio='%f' precedence='%f'\n", tpl->prio, tpl->precedence, currentPrio, currentPrec);
+                TRACE4("tpl has prio='%f' precedence='%f currentPrio='%f' currentPrec='%f''\n", tpl->prio, tpl->precedence, currentPrio, currentPrec);
                 rc = xpathMatches ( tpl->ast, tpl->content, currentNode,
                                     &(xs->cbs), errMsg);
                 if (rc < 0) {
@@ -5188,7 +5187,7 @@ static int ApplyTemplate (
             TRACE("doesn't match mode\n");
             continue; /* doesn't match mode */
         }
-        TRACE4("tpl has prio='%f' precedence='%f', currentPrio='%f', currentPrec='%f'\n", tpl->prio, tpl->precedence, currentPrio, currentPrec);
+        TRACE4("tpl has prio='%f' precedence='%f' currentPrio='%f' currentPrec='%f'\n", tpl->prio, tpl->precedence, currentPrio, currentPrec);
         /* According to XSLT rec 5.5: First test precedence */
         if (tpl->precedence < currentPrec) break;
         if (tpl->precedence == currentPrec) {
@@ -5542,7 +5541,7 @@ static void StripXSLTSpace (
                 }
                 parent = parent->parentNode;
             }
-            DBG(fprintf(stderr, "removing domNode0x%x(len %d) under '%s' \n",
+            DBG(fprintf(stderr, "removing domNode %p(len " domLengthConversion ") under '%s' \n",
                         node, len, node->parentNode->nodeName);)
             domDeleteNode (node, NULL, NULL);
         }
@@ -5814,7 +5813,7 @@ getExternalDocument (
         Tcl_DecrRefCount (extResolver);
     }
     if (doc == NULL) {
-        DBG(fprintf (stderr, "parse error, str len %d, xmlstring: -->%s<--\n",
+        DBG(fprintf (stderr, "parse error, str len %" TDOM_LS_MODIFIER "d, xmlstring: -->%s<--\n",
                      strlen (xmlstring), xmlstring);)
         Tcl_DStringInit (&dStr);
         Tcl_DStringAppend (&dStr, "Error while processing external entity \"",
