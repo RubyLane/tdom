@@ -75,4 +75,44 @@ declare 17 generic {
 declare 18 generic {
     SchemaData * tdomGetSchemadata (void)
 }
+declare 19 generic {
+    void tcldom_createNodeObj (Tcl_Interp *interp, domNode *node,
+                               char *objCmdName)
+}
+declare 20 generic {
+    domNode * domCloneNode (domNode *node, int deep)
+}
+declare 21 generic {
+    domDocument * domCreateDoc (const char *baseURI, int storeLineColumn)
+}
+declare 22 generic {
+    domDocument * domCreateDocument (const char *uri,
+                                     char *documentElementTagName)
+}
+declare 23 generic {
+    void domSetDocumentElement (domDocument *doc)
+}
+declare 24 generic {
+    void domFreeDocument (domDocument *doc, domFreeCallback freeCB,
+                          void *clientData)
+}
+declare 25 generic {
+    domNode * domNewElementNode (domDocument *doc, const char *tagName)
+}
+declare 26 generic {
+    domTextNode * domAppendNewTextNode (domNode *parent, char *value,
+                                        domLength length,
+                                        domNodeType nodeType,
+                                        int disableOutputEscaping)
+}
+declare 27 generic {
+    domException domAppendChild (domNode *node, domNode *childToAppend)
+}
+declare 28 generic {
+    domAttrNode * domSetAttributeEx (domNode *node,
+                                     const char *attributeName,
+                                     domLength nameLength,
+                                     const char *attributeValue,
+                                     domLength valueLength)
+}
 

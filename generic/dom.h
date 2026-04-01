@@ -865,6 +865,11 @@ domProcessingInstructionNode * domNewProcessingInstructionNode (
 
 domAttrNode *  domSetAttribute (domNode *node, const char *attributeName,
                                                const char *attributeValue);
+domAttrNode *  domSetAttributeEx (domNode *node,
+                                  const char *attributeName,
+                                  domLength nameLength,
+                                  const char *attributeValue,
+                                  domLength valueLength);
 
 domAttrNode *  domSetAttributeNS (domNode *node, const char *attributeName,
                                                  const char *attributeValue,

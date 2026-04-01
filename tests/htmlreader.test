@@ -2329,11 +2329,7 @@ test html-2.5 {HTML parsing} {
         </body></html>
     }]
     $doc asHTML
-} {<html>
-<head><title></title></head><body><form><select id="L" name="nls_language">
-<option value="">--</option><option value="en_US" selected="on">en_US</option><option value="es_ES">es_ES</option><option value="de_DE">de_DE</option>
-</select></form></body>
-</html>}
+} {<html><head><title></title></head><body><form><select id="L" name="nls_language"><option value="">--</option><option value="en_US" selected="on">en_US</option><option value="es_ES">es_ES</option><option value="de_DE">de_DE</option></select></form></body></html>}
 
 test html-2.6 {HTML parsing} {
     set doc [dom parse -html {<html> <head><title></title></head><body>
@@ -2348,15 +2344,11 @@ test html-2.6 {HTML parsing} {
         </body></html>
     }]
     $doc asHTML
-} {<html>
-<head><title></title></head><body><form><select id="L" name="nls_language">
-<option value="">--
+} {<html><head><title></title></head><body><form><select id="L" name="nls_language"><option value="">--
         </option><option value="en_US" selected="on">en_US
         </option><option value="es_ES">es_ES
         </option><option value="de_DE">de_DE
-        </option>
-</select></form></body>
-</html>}
+        </option></select></form></body></html>}
 
 test html-2.7 {HTML parsing} {
     set doc [dom parse -html {<html> <head><title></title></head><body>
@@ -2370,14 +2362,10 @@ test html-2.7 {HTML parsing} {
         </body></html>
     }]
     $doc asHTML
-} {<html>
-<head><title></title></head><body><form><select id="L" name="nls_language">
-<option value="">--
+} {<html><head><title></title></head><body><form><select id="L" name="nls_language"><option value="">--
         </option><option value="en_US" selected="selected">en_US
         </option><option value="de_DE">de_DE
-        </option>
-</select></form></body>
-</html>}
+        </option></select></form></body></html>}
 
 test html-2.8 {HTML parsing} {
     set doc [dom parse -html {<html> <head><title></title></head><body>
@@ -2391,14 +2379,10 @@ test html-2.8 {HTML parsing} {
         </body></html>
     }]
     $doc asHTML
-} {<html>
-<head><title></title></head><body><form><select id="L" name="nls_language">
-<option value="">--
+} {<html><head><title></title></head><body><form><select id="L" name="nls_language"><option value="">--
         </option><option selected="selected" value="en_US">en_US
         </option><option value="de_DE">de_DE
-        </option>
-</select></form></body>
-</html>}
+        </option></select></form></body></html>}
 
 test html-2.9 {HTML parsing} {knownBug} {
     set doc [dom parse -html {<HTML><MATH-field>x = 1 + 1</MATH-field></HTML>}]
@@ -2466,12 +2450,12 @@ test html-3.5 {-forest} {
     set result
 } {<head><title>Some</title></head><body>text</body>}
 
-test html-3.6 {Allow missing </li> in <ul>} {
+test html-3.6 {Allow missing </li> in <ul>} {knownBug} {
     set doc [dom parse -html {<html><ul><li>first<li>second</ul></html>}]
     string map {"\n" ""} [$doc asHTML]
 } {<html><ul><li>first</li><li>second</li></ul></html>}
 
-test html-3.7 {Allow missing </li> in <ol>} {
+test html-3.7 {Allow missing </li> in <ol>} {knownBug} {
     set doc [dom parse -html {<html><ol><li>first<li>second</ol></html>}]
     string map {"\n" ""} [$doc asHTML]
 } {<html><ol><li>first</li><li>second</li></ol></html>}

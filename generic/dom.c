@@ -3083,6 +3083,24 @@ domSetAttribute (
     const char *attributeValue
 )
 {
+    return domSetAttributeEx(node,
+            attributeName, (domLength)strlen(attributeName),
+            attributeValue, (domLength)strlen(attributeValue));
+}
+
+/*---------------------------------------------------------------------------
+|   domSetAttributeEx
+|
+\--------------------------------------------------------------------------*/
+domAttrNode *
+domSetAttributeEx (
+    domNode    *node,
+    const char *attributeName,
+    domLength   nameLength,
+    const char *attributeValue,
+    domLength   valueLength
+)
+{
     domAttrNode   *attr, *lastAttr;
     Tcl_HashEntry *h;
     int            hnew;
@@ -3110,9 +3128,10 @@ domSetAttribute (
             }
         }
         FREE (attr->nodeValue);
-        attr->valueLength = (domLength)strlen(attributeValue);
-        attr->nodeValue   = (char*)MALLOC(attr->valueLength+1);
-        strcpy(attr->nodeValue, attributeValue);
+        attr->valueLength = valueLength;
+        attr->nodeValue   = (char*)MALLOC(valueLength+1);
+        memcpy(attr->nodeValue, attributeValue, valueLength);
+        attr->nodeValue[valueLength] = 0;
     } else {
         /*-----------------------------------------------
         |   add a complete new attribute node
@@ -3126,9 +3145,10 @@ domSetAttribute (
         attr->namespace   = 0;
         attr->nodeName    = (char *)&(h->key);
         attr->parentNode  = node;
-        attr->valueLength = (domLength)strlen(attributeValue);
-        attr->nodeValue   = (char*)MALLOC(attr->valueLength+1);
-        strcpy(attr->nodeValue, attributeValue);
+        attr->valueLength = valueLength;
+        attr->nodeValue   = (char*)MALLOC(valueLength+1);
+        memcpy(attr->nodeValue, attributeValue, valueLength);
+        attr->nodeValue[valueLength] = 0;
 
         if (node->firstAttr) {
             lastAttr = node->firstAttr;

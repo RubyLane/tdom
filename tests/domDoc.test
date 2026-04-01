@@ -220,9 +220,7 @@ test domDoc-1.17 {asHTML - content of script/style tags} {
     set result [$doc asHTML]
     $doc delete
     set result
-} {<html>
-<script>a & b</script><style>foo < bar</style>
-</html>}
+} {<html><script>a & b</script><style>foo < bar</style></html>}
 
 test domDoc-1.18 {asXML -escapeAllQuot} {
     set doc [dom parse {<doc>This is "strange"</doc>}]

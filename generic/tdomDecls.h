@@ -63,7 +63,38 @@ EXTERN domNode *	tcldom_getNodeFromName(Tcl_Interp *interp,
 EXTERN domDocument *	tcldom_getDocumentFromName(Tcl_Interp *interp,
 				char *docName, char **errMsg);
 /* 18 */
-EXTERN SchemaData *	tdomGetSchemadata(Tcl_Interp *interp);
+EXTERN SchemaData *	tdomGetSchemadata(void);
+/* 19 */
+EXTERN void		tcldom_createNodeObj(Tcl_Interp *interp,
+				domNode *node, char *objCmdName);
+/* 20 */
+EXTERN domNode *	domCloneNode(domNode *node, int deep);
+/* 21 */
+EXTERN domDocument *	domCreateDoc(const char *baseURI,
+				int storeLineColumn);
+/* 22 */
+EXTERN domDocument *	domCreateDocument(const char *uri,
+				char *documentElementTagName);
+/* 23 */
+EXTERN void		domSetDocumentElement(domDocument *doc);
+/* 24 */
+EXTERN void		domFreeDocument(domDocument *doc,
+				domFreeCallback freeCB, void *clientData);
+/* 25 */
+EXTERN domNode *	domNewElementNode(domDocument *doc,
+				const char *tagName);
+/* 26 */
+EXTERN domTextNode *	domAppendNewTextNode(domNode *parent, char *value,
+				domLength length, domNodeType nodeType,
+				int disableOutputEscaping);
+/* 27 */
+EXTERN domException	domAppendChild(domNode *node, domNode *childToAppend);
+/* 28 */
+EXTERN domAttrNode *	domSetAttributeEx(domNode *node,
+				const char *attributeName,
+				domLength nameLength,
+				const char *attributeValue,
+				domLength valueLength);
 
 typedef struct TdomStubs {
     int magic;
@@ -87,7 +118,17 @@ typedef struct TdomStubs {
     int (*xML_GetIdAttributeIndex) (XML_Parser parser); /* 15 */
     domNode * (*tcldom_getNodeFromName) (Tcl_Interp *interp, char *nodeName, char **errMsg); /* 16 */
     domDocument * (*tcldom_getDocumentFromName) (Tcl_Interp *interp, char *docName, char **errMsg); /* 17 */
-    SchemaData * (*tdomGetSchemadata) (Tcl_Interp *interp); /* 18 */
+    SchemaData * (*tdomGetSchemadata) (void); /* 18 */
+    void (*tcldom_createNodeObj) (Tcl_Interp *interp, domNode *node, char *objCmdName); /* 19 */
+    domNode * (*domCloneNode) (domNode *node, int deep); /* 20 */
+    domDocument * (*domCreateDoc) (const char *baseURI, int storeLineColumn); /* 21 */
+    domDocument * (*domCreateDocument) (const char *uri, char *documentElementTagName); /* 22 */
+    void (*domSetDocumentElement) (domDocument *doc); /* 23 */
+    void (*domFreeDocument) (domDocument *doc, domFreeCallback freeCB, void *clientData); /* 24 */
+    domNode * (*domNewElementNode) (domDocument *doc, const char *tagName); /* 25 */
+    domTextNode * (*domAppendNewTextNode) (domNode *parent, char *value, domLength length, domNodeType nodeType, int disableOutputEscaping); /* 26 */
+    domException (*domAppendChild) (domNode *node, domNode *childToAppend); /* 27 */
+    domAttrNode * (*domSetAttributeEx) (domNode *node, const char *attributeName, domLength nameLength, const char *attributeValue, domLength valueLength); /* 28 */
 } TdomStubs;
 
 extern const TdomStubs *tdomStubsPtr;
@@ -140,6 +181,26 @@ extern const TdomStubs *tdomStubsPtr;
 	(tdomStubsPtr->tcldom_getDocumentFromName) /* 17 */
 #define tdomGetSchemadata \
 	(tdomStubsPtr->tdomGetSchemadata) /* 18 */
+#define tcldom_createNodeObj \
+	(tdomStubsPtr->tcldom_createNodeObj) /* 19 */
+#define domCloneNode \
+	(tdomStubsPtr->domCloneNode) /* 20 */
+#define domCreateDoc \
+	(tdomStubsPtr->domCreateDoc) /* 21 */
+#define domCreateDocument \
+	(tdomStubsPtr->domCreateDocument) /* 22 */
+#define domSetDocumentElement \
+	(tdomStubsPtr->domSetDocumentElement) /* 23 */
+#define domFreeDocument \
+	(tdomStubsPtr->domFreeDocument) /* 24 */
+#define domNewElementNode \
+	(tdomStubsPtr->domNewElementNode) /* 25 */
+#define domAppendNewTextNode \
+	(tdomStubsPtr->domAppendNewTextNode) /* 26 */
+#define domAppendChild \
+	(tdomStubsPtr->domAppendChild) /* 27 */
+#define domSetAttributeEx \
+	(tdomStubsPtr->domSetAttributeEx) /* 28 */
 
 #endif /* defined(USE_TDOM_STUBS) */
 

@@ -30,6 +30,16 @@ const TdomStubs tdomStubs = {
     tcldom_getNodeFromName, /* 16 */
     tcldom_getDocumentFromName, /* 17 */
     tdomGetSchemadata, /* 18 */
+    tcldom_createNodeObj, /* 19 */
+    domCloneNode, /* 20 */
+    domCreateDoc, /* 21 */
+    domCreateDocument, /* 22 */
+    domSetDocumentElement, /* 23 */
+    domFreeDocument, /* 24 */
+    domNewElementNode, /* 25 */
+    domAppendNewTextNode, /* 26 */
+    domAppendChild, /* 27 */
+    domSetAttributeEx, /* 28 */
 };
 
 /* !END!: Do not edit above this line. */
