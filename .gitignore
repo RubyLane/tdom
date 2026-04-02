@@ -1,0 +1,13 @@
+*.o
+*.a
+*.so
+tags
+autom4te.cache
+config.log
+config.status
+*~
+*.swp
+Makefile
+pkgIndex.tcl
+tdomConfig.sh
+/versionhash.h
