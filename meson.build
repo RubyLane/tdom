@@ -124,12 +124,18 @@ endif
 # --- Teabase init (provides tcl_dep, tclsh, build_tclsh, pkg_dir, teaconf) ---
 subdir('teabase/init')
 
-# --- expat selection: bundled vs system ---
-if get_option('expat') == 'bundled'
-  subdir('expat')
-else
-  deps += dependency('expat', version: '>=2.6.4')
-endif
+# --- expat dependency ---
+# Use the system expat if available, otherwise fall back to the meson
+# wrap (downloads the upstream release and builds it as a subproject).
+# The bundled expat/ sources in the repo are kept for the autotools
+# build path; the meson build ignores them.  When the fallback kicks in,
+# build expat statically so it folds into libtcl9tdom.so — no runtime
+# libexpat dependency on the installed tdom.
+deps += dependency('expat',
+  version:          '>=2.6.4',
+  allow_fallback:   true,
+  default_options:  ['default_library=static'],
+)
 
 subdir('generic')
 
