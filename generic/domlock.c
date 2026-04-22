@@ -37,6 +37,7 @@
 \---------------------------------------------------------------------------*/
 static Tcl_Mutex lockMutex = 0;
 static domlock *domLocks = NULL;
+static int domLocksFinalized = 0;
 
 
 /*----------------------------------------------------------------------------
@@ -137,11 +138,22 @@ domLocksDetach(domDocument *doc)
         domPanic("document lock mismatch");
     }
 
-    dl->next = domLocks;
-    domLocks = dl;
-
     dl->doc = NULL;
     doc->lock = NULL;
+
+    if (domLocksFinalized) {
+        /* The free-list has already been reclaimed by domLocksFinalize
+         * (exit handlers run before doc-command deletions).  Don't
+         * put this lock back on a list that nothing will ever drain
+         * — finalize and free it directly. */
+        Tcl_MutexFinalize(&dl->mutex);
+        Tcl_ConditionFinalize(&dl->rcond);
+        Tcl_ConditionFinalize(&dl->wcond);
+        FREE((char*)dl);
+    } else {
+        dl->next = domLocks;
+        domLocks = dl;
+    }
 
     Tcl_MutexUnlock(&lockMutex);
 }
@@ -170,6 +182,7 @@ domLocksFinalize(ClientData UNUSED(dummy))
         FREE((char*)tmp);
     }
     domLocks = NULL;
+    domLocksFinalized = 1;
 
     Tcl_MutexUnlock(&lockMutex);
 }

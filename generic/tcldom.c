@@ -8295,7 +8295,13 @@ int tcldom_UnregisterDocShared (
                 deleted = 0;
             }
         } else {
-            deleted = 0;
+            /* tcldom_Finalize has run and torn down the shared-docs
+             * table.  refCount is 1, so this caller holds the last
+             * reference; free the document directly.  Without this,
+             * any doc-command deletion that fires after the exit
+             * handler (Tcl_Exit order: exit handlers run before the
+             * interp's commands are deleted) leaks the whole doc. */
+            deleted = 1;
         }
     }
     Tcl_MutexUnlock(&tableMutex);
