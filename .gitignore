@@ -11,3 +11,8 @@ Makefile
 pkgIndex.tcl
 tdomConfig.sh
 /versionhash.h
+# meson build artefacts
+/build*
+/subprojects/*-*
+/subprojects/packagecache
+/subprojects/.wraplock

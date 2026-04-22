@@ -18,7 +18,9 @@ if {$tcl_version < 8.5} {
 } else {
     configure {*}$argv -testdir [file dirname [info script]]
 }
-runAllTests
+set failed [runAllTests]
 # See http://mini.net/tcl/3248 for an explanation.
+rename ::exit ::_real_exit
 proc exit args {}
+::_real_exit [expr {$failed ? 1 : 0}]
 

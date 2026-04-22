@@ -1,0 +1,31 @@
+option('dtd',        type: 'boolean', value: true,
+  description: 'Build expat with DTD support')
+
+option('ns',         type: 'boolean', value: true,
+  description: 'Build with XML namespace support')
+
+option('unknown',    type: 'boolean', value: false,
+  description: 'Enable built-in unknown command')
+
+option('tdomalloc',  type: 'boolean', value: false,
+  description: 'Build with tDOMs block allocator for nodes')
+
+option('lessns',     type: 'boolean', value: false,
+  description: 'Build with lower limit for XML ns declarations per document')
+
+option('schema',     type: 'boolean', value: true,
+  description: 'Build with validation features')
+
+option('html5',      type: 'feature', value: 'auto',
+  description: 'Build with HTML5 parsing support (via gumbo)')
+
+option('expat',      type: 'combo', choices: ['bundled', 'system'], value: 'bundled',
+  description: 'Use the bundled expat sources or link against the system expat')
+
+option('aolserver',  type: 'string', value: '',
+  description: 'Path to an AOLserver installation (containing include/ns.h) to build with AOLserver integration; empty = disabled')
+
+option('entropy',    type: 'combo',
+  choices: ['auto', 'none', 'getrandom', 'syscall_getrandom', 'arc4random_buf', 'arc4random', 'dev_urandom'],
+  value:   'auto',
+  description: 'Source of entropy used by bundled expat for hash table salting')
