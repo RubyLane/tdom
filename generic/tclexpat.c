@@ -3735,7 +3735,7 @@ TclGenExpatExternalEntityRefHandler(
           }
           result = 1;
           for (;;) {
-              size_t nread;
+              ssize_t nread;
               char *fbuf = XML_GetBuffer (extparser, TDOM_EXPAT_READ_SIZE);
               if (!fbuf) {
                   close (fd);

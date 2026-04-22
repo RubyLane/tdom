@@ -614,7 +614,7 @@ static void arrayErrMsg (
     ) 
 {
     Tcl_Obj *msg;
-    char buf[20];
+    char buf[32];  /* big enough for -2^63 (20 chars) + NUL + margin */
 
     msg = Tcl_GetObjResult (interp);
     Tcl_IncrRefCount (msg);

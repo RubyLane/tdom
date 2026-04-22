@@ -43,7 +43,7 @@ struct mydata {
  */
 
 static int
-NsTdom_Init (Tcl_Interp *interp, void *cd)
+NsTdom_Init (Tcl_Interp *interp, const void *cd)
 {
     struct mydata *md = (struct mydata*)cd;
     int ret = Tdom_Init(interp);
@@ -83,7 +83,7 @@ Ns_ModuleInit(char *srv, char *mod)
     md->server  = strcpy(ns_malloc(strlen(srv)+1), srv);
 
     return (Ns_TclInitInterps(srv, NsTdom_Init, (void*)md) == TCL_OK)
-        ? NS_OK : NS_ERROR; 
+        ? NS_OK : NS_ERROR;
 }
 
 #endif /* NS_AOLSERVER */

@@ -8388,7 +8388,8 @@ int tcldom_unknownCmd (
                 openedParen = 1;
                 while (*paren) {
                     if (*paren == '\\') {
-                        (void) Tcl_Backslash(paren, &count);
+                        char _bsbuf[4];
+                        (void) Tcl_UtfBackslash(paren, &count, _bsbuf);
                         paren += count;
                     } else if (*paren == ')') {
                         openedParen--;
@@ -8473,7 +8474,8 @@ int tcldom_unknownCmd (
             openedParen = 1;
             while (*paren) {
                 if (*paren == '\\') {
-                    (void) Tcl_Backslash(paren, &count);
+                    char _bsbuf[4];
+                    (void) Tcl_UtfBackslash(paren, &count, _bsbuf);
                     paren += count;
                 } else if (*paren == ')') {
                     openedParen--;

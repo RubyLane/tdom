@@ -38,6 +38,7 @@
 #include <tcl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dom.h>       /* for domLength typedef */
 #include <domalloc.h>
 
 
@@ -136,7 +137,7 @@ fillHashTable (
     domAllocBlock * hashedBlock;
     unsigned int    i;
 
-    i = ( (unsigned int)mem >> BLOCK_SIZE_BITS) & BIN_HASH_MASK;
+    i = ( (uintptr_t)mem >> BLOCK_SIZE_BITS) & BIN_HASH_MASK;
     hashedBlock = bins.hashedBlocks[i];
     while (hashedBlock != NULL) {
         if (hashedBlock == block) {
@@ -390,7 +391,7 @@ domFree (
     |
     \------------------------------------------------------------------*/
     if (!foundInCache) {
-        i = ( (unsigned int)mem >> BLOCK_SIZE_BITS) & BIN_HASH_MASK;
+        i = ( (uintptr_t)mem >> BLOCK_SIZE_BITS) & BIN_HASH_MASK;
         block = bins.hashedBlocks[i];
         while (block != NULL) {
             if ((mem > (void*)block) && (mem < (void*)(block->end))) break;

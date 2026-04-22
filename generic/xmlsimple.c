@@ -863,7 +863,7 @@ XML_SimpleParse (
                                                  &(attrnode->valueLength) )) {
                             *(ArgName + nArgName) = savedChar;
                             FREE (attrnode->nodeValue);
-                            FREE (attrnode);
+                            domFree ((void*)attrnode);
                             RetError("Entity parsing error",(domLength)(x - xml));
                         }
                     }
@@ -927,7 +927,7 @@ XML_SimpleParse (
                                                  &(attrnode->valueLength) )) {
                             *(ArgName + nArgName) = savedChar;
                             FREE (attrnode->nodeValue);
-                            FREE (attrnode);
+                            domFree ((void*)attrnode);
                             RetError("Entity parsing error", (domLength)(x - xml));
                         }
                     }
