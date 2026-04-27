@@ -300,7 +300,7 @@ We need 8 bits to index into pages, 3 bits to add to that index and
       : ((n) == 4 \
         ? 1 : 0))))
 
-#include "../expat/nametab.h"
+#include "nametab.h"
 
 static const unsigned char nameChar7Bit[] = {
 /* 0x00 */    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

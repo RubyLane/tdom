@@ -1,5 +1,5 @@
 project('tdom', 'c',
-  version:            '0.9.6.3',
+  version:            '0.9.6.4',
   # Match the autotools build's scope: no explicit -std= (use the
   # compiler default), and warning_level=1 (just -Wall, no -Wextra).
   default_options:    ['warning_level=1'],

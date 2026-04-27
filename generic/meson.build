@@ -20,6 +20,7 @@ install_headers(
   'domalloc.h',
   'dom.h',
   'domxpath.h',
+  'nametab.h',
   'schema.h',
   'tcldom.h',
   'tclexpat.h',
