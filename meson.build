@@ -1,5 +1,5 @@
 project('tdom', 'c',
-  version:            '0.9.6.5',
+  version:            '0.9.6.6',
   # Match the autotools build's scope: no explicit -std= (use the
   # compiler default), and warning_level=1 (just -Wall, no -Wextra).
   default_options:    ['warning_level=1'],
@@ -231,6 +231,19 @@ configure_file(
   configuration:  pc_conf,
   install_dir:    tcl_dep.get_variable('libdir') / 'pkgconfig',
 )
+
+# Override-dependency for meson subproject consumers. Mirrors the
+# tcl_pkg_path variable shipped in the .pc file so that a downstream
+# `dependency('tdom', fallback: ['tdom', 'tdom_dep']).get_variable('tcl_pkg_path')`
+# returns the right directory regardless of whether tdom was found
+# via pkg-config or rebuilt from source as a subproject.
+tdom_dep = declare_dependency(
+  variables: {
+    'tcl_pkg_path': fs.parent(pkg_so.full_path()),
+    'version':      meson.project_version(),
+  },
+)
+meson.override_dependency(meson.project_name(), tdom_dep)
 
 # --- Release tarball via `meson dist` ---
 # tools/dist_fixup.sh rewrites the distributed manifest.uuid with the
