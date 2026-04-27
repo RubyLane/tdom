@@ -2,8 +2,6 @@
 #include <tdom.h>
 #include <string.h>
 
-extern char *Tdom_InitStubs (Tcl_Interp *interp, char *version, int exact);
-
 typedef struct simpleCounter 
 {
     int elementCounter;

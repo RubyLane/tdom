@@ -14,3 +14,6 @@
 
 #include "dom.h"
 #include "tdomDecls.h"
+
+EXTERN const char *	Tdom_InitStubs(Tcl_Interp *interp, char *version,
+				int exact);

@@ -260,8 +260,6 @@ TNC_ErrorString (int code)
 #define SetBooleanResult(i) Tcl_ResetResult(interp); \
                      Tcl_SetBooleanObj(Tcl_GetObjResult(interp), (i))
 
-extern char *Tdom_InitStubs (Tcl_Interp *interp, char *version, int exact);
-
 static void
 signalNotValid (
     void        *userData,

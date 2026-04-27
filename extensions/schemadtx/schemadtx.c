@@ -35,8 +35,6 @@
     sdata->cp->quants[sdata->cp->nc] = SCHEMA_CQUANT_ONE;               \
     sdata->cp->nc++;                                                    \
 
-extern char *Tdom_InitStubs (Tcl_Interp *interp, char *version, int exact);
-
 #define GTIN_8   1
 #define GTIN_12  2
 #define GTIN_13  4
