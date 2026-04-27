@@ -1,5 +1,5 @@
 project('tdom', 'c',
-  version:            '0.9.6.1',
+  version:            '0.9.6.3',
   # Match the autotools build's scope: no explicit -std= (use the
   # compiler default), and warning_level=1 (just -Wall, no -Wextra).
   default_options:    ['warning_level=1'],
@@ -23,7 +23,6 @@ add_project_arguments('-D_DEFAULT_SOURCE', language: 'c')
 add_project_arguments(
   cc.get_supported_arguments([
     '-Wno-unused-variable',          # static memsuite in dom.h per-TU
-    '-Wno-deprecated-declarations',  # Ns_TclInitInterps (AOLserver 4.x)
   ]),
   language: 'c',
 )
@@ -84,12 +83,13 @@ endif
 # our own (see below, after subdir('generic')).
 aol_dir = get_option('aolserver')
 if aol_dir != ''
-  if not fs.is_file(aol_dir / 'include' / 'ns.h')
+  if not fs.is_file(aol_dir / 'include/ns.h')
     error('aolserver="' + aol_dir + '" but ' + aol_dir + '/include/ns.h not found')
   endif
   if get_option('tdomalloc')
     error('aolserver and tdomalloc are mutually exclusive: AOLserver mode forces USE_NORMAL_ALLOCATOR, which replaces tDOM\'s block allocator with macros and collides with the domalloc.c definitions')
   endif
+  inc += include_directories(aol_dir / 'include')
   add_project_arguments('-DNS_AOLSERVER=1',         language: 'c')
   add_project_arguments('-DUSE_NORMAL_ALLOCATOR=1', language: 'c')
   # ns.h pulls in zlib.h which uses off64_t from <sys/types.h>; glibc
@@ -102,6 +102,8 @@ if aol_dir != ''
       link_args: ['-L' + aol_dir / 'lib', '-lnsd', '-lnsthread'],
     )
   endif
+  # Ns_TclInitInterps (AOLserver 4.x)
+  add_project_arguments(cc.get_supported_arguments(['-Wno-deprecated-declarations']), language: 'c')
 endif
 
 # Tcl 9 is always threaded, and Tcl 8.6 has been threaded-by-default for
@@ -138,10 +140,6 @@ deps += dependency('expat',
 )
 
 subdir('generic')
-
-if aol_dir != ''
-  inc += include_directories(aol_dir / 'include')
-endif
 
 # --- versionhash.h (generated from manifest.uuid / git rev, consumed by tcldom.c) ---
 if fs.exists('manifest.uuid')
