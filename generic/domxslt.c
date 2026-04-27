@@ -2712,13 +2712,23 @@ static int xsltGetVar (
             rc = xsltSetVar (xs, variableName, &nodeList, xs->xmlRootNode,
                              0, select, topLevelVar->node, 1, errMsg);
             xpathRSFree ( &nodeList );
-            CHECK_RC;
+            if (rc) {
+                xs->varsInProcess = thisVarInProcess.next;
+                xs->currentXSLTNode = savedCurrentXSLTNode;
+                return rc;
+            }
             rc = xsltGetVar (xs, variableName, varURI, result, errMsg);
-            CHECK_RC;
+            if (rc) {
+                xs->varsInProcess = thisVarInProcess.next;
+                xs->currentXSLTNode = savedCurrentXSLTNode;
+                return rc;
+            }
             /* remove var out of the varsInProcess list. Should be first
                in the list, shouldn't it? */
             varInProcess = xs->varsInProcess;
             if (varInProcess != &thisVarInProcess) {
+                xs->varsInProcess = thisVarInProcess.next;
+                xs->currentXSLTNode = savedCurrentXSLTNode;
                 reportError (topLevelVar->node, "Error in top level"
                              " vars processing.", errMsg);
                 return XPATH_EVAL_ERR;
@@ -3366,7 +3376,7 @@ static int doSortActions (
                        select, typeText, ascending, nodelist->nr_nodes);
                 CHECK_RC;
                 if (!pos)
-                    pos = (domLength*)MALLOC(sizeof(int) * nodelist->nr_nodes);
+                    pos = (domLength*)MALLOC(sizeof(domLength) * nodelist->nr_nodes);
                 for (i=0; i<nodelist->nr_nodes;i++) pos[i] = i;
 
                 xs->currentXSLTNode = child;
@@ -5193,7 +5203,7 @@ static int ApplyTemplate (
         if (tpl->precedence < currentPrec) break;
         if (tpl->precedence == currentPrec) {
             if (tpl->prio < currentPrio) break;
-            if (tpl->prio == currentPrio
+            if (tpl->prio == currentPrio && tplChoosen
                 && domPrecedes (tpl->content, tplChoosen->content))
                 break;
         }

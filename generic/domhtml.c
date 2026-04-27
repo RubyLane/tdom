@@ -3310,7 +3310,7 @@ HTML_SimpleParse (
         }
     }
 
-    while (parent_node != NULL && node->parentNode) {
+    while (parent_node != NULL && node != NULL && node->parentNode) {
         pn = (char*)node->parentNode->nodeName;
         DBG(fprintf(stderr, "final autoclose '%s'? \n", pn);)
         /*---------------------------------------------------------------

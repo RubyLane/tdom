@@ -35,6 +35,7 @@
 |   Includes
 |
 \---------------------------------------------------------------------------*/
+#include <assert.h>
 #include <dom.h>
 #include <tcldom.h>
 #include <tcl.h>
@@ -127,6 +128,11 @@ StackPush (
     if (csPtr->elementStack == NULL) {
         csPtr->elementStack = newElement;
     } else {
+        /* elementStack and currentSlot move in lockstep: they are
+         * both NULL initially, are both set non-NULL by the first
+         * push (here and below), and currentSlot is never cleared
+         * thereafter, so currentSlot is non-NULL here. */
+        assert (csPtr->currentSlot != NULL);
         csPtr->currentSlot->nextPtr = newElement;
         newElement->prevPtr = csPtr->currentSlot;
     }

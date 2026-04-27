@@ -4968,10 +4968,11 @@ static int validateSource (
             }
             break;
         case o_paramentityparsing:
-            if (Tcl_GetIndexFromObj(interp, objv[1], 
-                                    paramEntityParsingValues, "value", 0, 
+            if (Tcl_GetIndexFromObj(interp, objv[1],
+                                    paramEntityParsingValues, "value", 0,
                                     &value) != TCL_OK) {
-                Tcl_DecrRefCount (vdata->externalentitycommandObj);
+                if (vdata->externalentitycommandObj)
+                    Tcl_DecrRefCount (vdata->externalentitycommandObj);
                 return TCL_ERROR;
             }
             switch ((enum paramEntityParsingValue) value) {
@@ -5126,7 +5127,8 @@ static int validateSource (
     sdata->parser = NULL;
     FREE (vdata->uri);
     Tcl_DStringFree (&cdata);
-    Tcl_DecrRefCount (vdata->externalentitycommandObj);
+    if (vdata->externalentitycommandObj)
+        Tcl_DecrRefCount (vdata->externalentitycommandObj);
 
     /* sdata->evalError == 1 means Tcl evaluation error in called
      * script. sdata->evalError == 2 is used to signal "abort but
@@ -6508,7 +6510,7 @@ static int maybeAddAttr (
     } else if (sdata->numAttr == sdata->attrSize) {
         sdata->currentAttrs =
             REALLOC (sdata->currentAttrs, 2 * sdata->attrSize
-                     * sizeof (SchemaAttr));
+                     * sizeof (SchemaAttr*));
         sdata->attrSize *= 2;
     }
     sdata->currentAttrs[sdata->numAttr] = attr;
@@ -6724,7 +6726,7 @@ VirtualPatternObjCmd (
 
     pattern = initSchemaCP (SCHEMA_CTYPE_VIRTUAL, NULL, NULL);
     REMEMBER_PATTERN (pattern)
-    pattern->content = MALLOC (sizeof (Tcl_Obj*) * (objc-1));
+    pattern->content = MALLOC (sizeof (SchemaCP*) * (objc-1));
     for (i = 0; i < objc-1; i++) {
         pattern->content[i] = (SchemaCP *) objv[i+1];
         Tcl_IncrRefCount (objv[i+1]);
