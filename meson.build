@@ -1,5 +1,5 @@
 project('tdom', 'c',
-  version:            '0.9.6.6',
+  version:            '0.9.6.7',
   # Match the autotools build's scope: no explicit -std= (use the
   # compiler default), and warning_level=1 (just -Wall, no -Wextra).
   default_options:    ['warning_level=1'],
@@ -207,6 +207,7 @@ install_data(
   'doc/tnc.n',
   'doc/xpathFunc.n',
   install_dir: get_option('mandir') / 'mann',
+  install_tag: meson.is_subproject() ? 'deps' : 'runtime',
 )
 
 # --- Build and install stubs library for dependent extensions ---
@@ -216,6 +217,7 @@ stubs_lib = static_library(meson.project_name() + 'stub',
   include_directories:  inc,
   install:              true,
   install_dir:          pkg_dir,
+  install_tag:          meson.is_subproject() ? 'deps' : 'runtime',
 )
 
 # --- Relocatable pkg-config file for downstream extensions ---
@@ -229,7 +231,9 @@ configure_file(
   input:          'tdom.pc.in',
   output:         meson.project_name() + '.pc',
   configuration:  pc_conf,
+  install:        true,
   install_dir:    tcl_dep.get_variable('libdir') / 'pkgconfig',
+  install_tag:    meson.is_subproject() ? 'deps' : 'runtime',
 )
 
 # Override-dependency for meson subproject consumers. Mirrors the
