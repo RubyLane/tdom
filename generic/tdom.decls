@@ -73,7 +73,7 @@ declare 17 generic {
                                                char *docName, char **errMsg)
 }
 declare 18 generic {
-    SchemaData * tdomGetSchemadata (void)
+    SchemaData * tdomGetSchemadata (Tcl_Interp* interp)
 }
 declare 19 generic {
     void tcldom_createNodeObj (Tcl_Interp *interp, domNode *node,
