@@ -1,5 +1,5 @@
 project('tdom', 'c',
-  version:            '0.9.6.7',
+  version:            '0.9.6.8',
   # Match the autotools build's scope: no explicit -std= (use the
   # compiler default), and warning_level=1 (just -Wall, no -Wextra).
   default_options:    ['warning_level=1'],
@@ -242,6 +242,10 @@ configure_file(
 # returns the right directory regardless of whether tdom was found
 # via pkg-config or rebuilt from source as a subproject.
 tdom_dep = declare_dependency(
+  link_with:            stubs_lib,
+  sources:              files('generic/tdomDecls.h'),
+  include_directories:  include_directories('generic'),
+  compile_args:         '-DUSE_TDOM_STUBS=1',
   variables: {
     'tcl_pkg_path': fs.parent(pkg_so.full_path()),
     'version':      meson.project_version(),
