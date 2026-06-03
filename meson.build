@@ -1,5 +1,5 @@
 project('tdom', 'c',
-  version:            '0.9.6.8',
+  version:            '0.9.6.9',
   # Match the autotools build's scope: no explicit -std= (use the
   # compiler default), and warning_level=1 (just -Wall, no -Wextra).
   default_options:    ['warning_level=1'],
@@ -216,6 +216,7 @@ stubs_lib = static_library(meson.project_name() + 'stub',
   dependencies:         deps,
   include_directories:  inc,
   install:              true,
+  c_args:               cc.get_supported_arguments('-g0'),
   install_dir:          pkg_dir,
   install_tag:          meson.is_subproject() ? 'deps' : 'runtime',
 )
