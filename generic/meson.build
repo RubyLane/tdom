@@ -28,18 +28,6 @@ install_headers(
   install_dir: pkg_dir,
 )
 
-# --- Stubs generation ---
-genstubs = custom_target('genstubs',
-  command: [
-    build_tclsh,
-    meson.project_source_root() / 'teabase/tools/genStubs.tcl',
-    meson.current_build_dir(),
-    files('tdom.decls'),
-  ],
-  output:       [ 'tdomStubInit.c',  'tdomDecls.h' ],
-  install_dir:  [ false,             pkg_dir       ],
-  install:      true,
-)
-
-deps += declare_dependency(sources: genstubs)
+# Stubs are generated and the stubs library built by the factored-out
+# teabase mechanism — see `tea_genstubs` in the top-level meson.build.
 inc  += include_directories('.')

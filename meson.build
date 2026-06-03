@@ -1,5 +1,5 @@
 project('tdom', 'c',
-  version:            '0.9.6.10',
+  version:            '0.9.6.11',
   # Match the autotools build's scope: no explicit -std= (use the
   # compiler default), and warning_level=1 (just -Wall, no -Wextra).
   default_options:    ['warning_level=1'],
@@ -163,6 +163,12 @@ inc += include_directories('.')
 # --- Install runtime Tcl sources ---
 teaconf_files += files('lib/tdom.tcl')
 
+# Drive the factored-out teabase stubs mechanism: it generates
+# tdomStubInit.c / tdomDecls.h from the .decls and builds the installed
+# stubs library (stripped of debug/LTO info and link deps).
+# tea_genstubs: 1st: .decls, 2nd: stublib.c
+tea_genstubs = files('generic/tdom.decls', 'generic/tdomStubLib.c')
+
 # --- Teabase main (builds shared_module, sets up tests, devenv) ---
 subdir('teabase')
 
@@ -210,16 +216,8 @@ install_data(
   install_tag: meson.is_subproject() ? 'deps' : 'runtime',
 )
 
-# --- Build and install stubs library for dependent extensions ---
-stubs_lib = static_library(meson.project_name() + 'stub',
-  'generic/tdomStubLib.c',
-  dependencies:         deps,
-  include_directories:  inc,
-  install:              true,
-  c_args:               cc.get_supported_arguments('-g0'),
-  install_dir:          pkg_dir,
-  install_tag:          meson.is_subproject() ? 'deps' : 'runtime',
-)
+# The stubs library (meson.project_name()+'stub') is built and installed by
+# the teabase mechanism above (driven by tea_genstubs).
 
 # --- Relocatable pkg-config file for downstream extensions ---
 pc_conf = configuration_data()
@@ -244,7 +242,7 @@ configure_file(
 # via pkg-config or rebuilt from source as a subproject.
 tdom_dep = declare_dependency(
   link_with:            stubs_lib,
-  sources:              files('generic/tdomDecls.h'),
+  sources:              genstubs[1],
   include_directories:  include_directories('generic'),
   compile_args:         '-DUSE_TDOM_STUBS=1',
   variables: {
